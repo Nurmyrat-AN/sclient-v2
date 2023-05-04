@@ -28,7 +28,7 @@ class ActionsSevice {
 
         if (customerId) andArr.push({ customerId })
 
-        const balanceCol = Sequelize.literal(`(SELECT SUM(res) FROM actions subActions WHERE subActions.customerId=ActionModel.customerId AND subActions.createdAt<=ActionModel.createdAt)`)
+        const balanceCol = Sequelize.literal(`(SELECT SUM(res) FROM actions subActions WHERE subActions.deletedAt IS NULL AND subActions.customerId=ActionModel.customerId AND subActions.createdAt<=ActionModel.createdAt)`)
 
         if (amount) andArr.push(numberQuerySql({ col: Sequelize.literal('`action`.amount'), num: amount }))
         if (res) andArr.push(numberQuerySql({ col: Sequelize.literal('`action`.res'), num: res }))
@@ -114,14 +114,14 @@ class ActionsSevice {
             where,
             attributes: {
                 include: [
-                    [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.id<=action.id AND a1.customerId=action.customerId)`), 'balance']
+                    [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=action.id AND a1.customerId=action.customerId)`), 'balance']
                 ]
             },
             include: ['customer', 'actionType', 'message', {
                 association: 'parentAction',
                 attributes: {
                     include: [
-                        [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.id<=parentAction.id AND a1.customerId=parentAction.customerId)`), 'balance']
+                        [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=parentAction.id AND a1.customerId=parentAction.customerId)`), 'balance']
                     ]
                 },
             }],
@@ -133,7 +133,7 @@ class ActionsSevice {
 
     getReports = async ({ name = '', startdate = new Date(), enddate = new Date() }) => {
 
-        const actionsSql = `FROM actions WHERE actions.actionTypeId=\`action-type\`.id AND actions.createdAt>='${moment(startdate).format('YYYY-MM-DD 00:00:00')}' AND actions.createdAt<='${moment(enddate).format('YYYY-MM-DD 23:23:59')}'`
+        const actionsSql = `FROM actions WHERE actions.deletedAt IS NULL AND actions.actionTypeId=\`action-type\`.id AND actions.createdAt>='${moment(startdate).format('YYYY-MM-DD 00:00:00')}' AND actions.createdAt<='${moment(enddate).format('YYYY-MM-DD 23:23:59')}'`
 
         return await mActionType.findAndCountAll({
             where: {

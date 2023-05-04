@@ -29,7 +29,7 @@ class CustomersService {
         }
 
         if (balance) {
-            andArr.push(numberQuerySql({ col: Sequelize.literal(`COALESCE((SELECT SUM(res) FROM actions WHERE customerId=customer.id ${enddate ? `AND actions.createdAt<='${formatEndDate(new Date(enddate))}'` : ''}),0)`), num: balance.toString() }))
+            andArr.push(numberQuerySql({ col: Sequelize.literal(`COALESCE((SELECT SUM(res) FROM actions WHERE actions.deletedAt IS NULL AND customerId=customer.id ${enddate ? `AND actions.createdAt<='${formatEndDate(new Date(enddate))}'` : ''}),0)`), num: balance.toString() }))
         }
 
         if (ids && ids.length > 0) {
@@ -55,7 +55,7 @@ class CustomersService {
                 where: await this.getAndArr(props),
                 attributes: {
                     include: [
-                        [Sequelize.literal(`COALESCE((SELECT SUM(res) FROM actions WHERE customerId=customer.id ${enddate ? `AND actions.createdAt<='${formatEndDate(new Date(enddate))}'` : ''}),0)`), 'balance']
+                        [Sequelize.literal(`COALESCE((SELECT SUM(res) FROM actions WHERE actions.deletedAt IS NULL AND customerId=customer.id ${enddate ? `AND actions.createdAt<='${formatEndDate(new Date(enddate))}'` : ''}),0)`), 'balance']
                     ]
                 },
                 include: ['groups'],
@@ -76,7 +76,7 @@ class CustomersService {
         const sum = await mAction.sum('res', {
             where: {
                 createdAt: { [Op.lte]: new Date(props.enddate || new Date()) },
-                customerId: { [Op.in]: ids }
+                customerId: { [Op.in]: ids },
             }
         })
         return sum || 0
@@ -129,7 +129,7 @@ class CustomersService {
                 const fromListFromSeperator = await mCurrency.findAll({
                     where: {
                         [Op.and]: [
-                            { id: { [Op.in]: Sequelize.literal(`(SELECT cexchange.currency_toId FROM currenciesexchanges cexchange WHERE cexchange.currency_fromId=${seperator.id})`) } },
+                            { id: { [Op.in]: Sequelize.literal(`(SELECT cexchange.currency_toId FROM _currenciesexchanges cexchange WHERE cexchange.currency_fromId=${seperator.id})`) } },
                             { id: { [Op.notIn]: props.fromList.map(f => f.id) } }
                         ]
                     }
