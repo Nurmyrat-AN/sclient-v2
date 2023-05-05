@@ -94,7 +94,7 @@ class AishTransactionsService {
 
             _transaction_sequence_number = _transaction_sequence_number > transaction._sequence_number ? _transaction_sequence_number : transaction._sequence_number
         }
-        return 179412 //_transaction_sequence_number
+        return _transaction_sequence_number
     }
 
 }
