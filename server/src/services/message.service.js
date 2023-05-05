@@ -17,7 +17,7 @@ class MessageService {
         }
     }
 
-    deleteMessage = async id => {
+    deletseMessage = async id => {
         await mMessage.destroy({ where: { id } })
         return true
     }

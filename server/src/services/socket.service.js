@@ -7,8 +7,8 @@ class SocketService {
     onConnect = (socket) => {
         if (!this.socket?.connected)
             this.socket = socket
+
         socket.on('sended-message', async (props, cb) => {
-            console.log(props)
             try {
                 const message = JSON.parse(props)
                 await messageService.createMessage(message)

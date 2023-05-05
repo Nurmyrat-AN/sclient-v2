@@ -15,6 +15,7 @@ const initializeDB = require('./src/db/migrations');
 const aishService = require('./src/services/aish.service');
 const aishTransactionsService = require('./src/services/transactions.service');
 const authMiddleware = require('./src/middleware/auth.middleware');
+const socketService = require('./src/services/socket.service');
 
 async function start() {
     await initializeDB()
@@ -60,6 +61,7 @@ async function start() {
 
     socket.on('connection', socket => {
         console.log(`Connected user: ${socket.id}`)
+        socketService.onConnect(socket)
     })
 }
 
