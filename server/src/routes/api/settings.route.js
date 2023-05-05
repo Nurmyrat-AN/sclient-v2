@@ -3,11 +3,14 @@ const mSettings = require("../../db/models/settings.model");
 const mActionType = require("../../db/models/action-type.model");
 const aishTransactionsService = require("../../services/transactions.service");
 const aishService = require("../../services/aish.service");
+const CustomError = require("../../errors");
 
 const settings = new Router()
 
 settings.post('/', async (req, res, next) => {
     try {
+        if (!req.isAdmin) throw CustomError.accessDeniedequest()
+
         const settings = (await mSettings.findAll()).reduce((res, s) => ({ ...res, [s._name]: s._value }), {})
         res.json({
             count: 0,
@@ -24,6 +27,8 @@ settings.post('/', async (req, res, next) => {
 
 settings.put('/', async (req, res, next) => {
     try {
+        if (!req.isAdmin) throw CustomError.accessDeniedequest()
+
         const s = await mSettings.findOrCreate({ where: { _name: req.body._key } })
         if (req.body.delete) {
             await s[0].destroy()

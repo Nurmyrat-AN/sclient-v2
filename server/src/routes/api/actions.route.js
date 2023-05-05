@@ -6,18 +6,18 @@ const mActionType = require("../../db/models/action-type.model");
 const ActionsSevice = require("../../services/actions.service");
 const mCurrency = require("../../db/models/cache/currency.model");
 const mAction = require("../../db/models/action.model");
-const { Sequelize } = require("sequelize");
+const CustomError = require("../../errors");
 
 const actions = new Router()
 actions.post('/datas', async (req, res, next) => {
     try {
-        const customers = (await new CustomersService().getAll({ ids: req.body.customers, limit: req.body.customers.length })).rows
+        const customers = (await new CustomersService().getAll({ ids: req.body.customers, barcodes: req.body.barcodes, limit: req.body.customers.length || 1000 })).rows
         const actionTypes = (await new ActionTypesService().getAll({
             isGlobal: (await mSettings.count({ where: { _name: 'device-app-key', _value: req.cookies['device-app-key'] } })) <= 0 ? true : undefined
         })).rows
         let actionTypeId = req.body.actionTypeId
         if (!actionTypeId) {
-            actionTypeId = (await mSettings.findOne({ where: { _name: 'default-action-type-id' }, }))._value
+            actionTypeId = (await mSettings.findOne({ where: { _name: 'default-action-type-id' }, }))?._value
         }
 
         let initialActionType = null
@@ -48,12 +48,12 @@ actions.post('/', async (req, res, next) => {
     try {
         const mainCurrency = await mCurrency.findOne({ where: { main: true } })
         const actionTypes = (await new ActionTypesService().getAll({
-            isGlobal: (await mSettings.count({ where: { _name: 'device-app-key', _value: req.cookies['device-app-key'] } })) <= 0 ? true : undefined
+            isGlobal: (await mSettings.count({ where: { _name: 'device-app-key', _value: req.cookies['device-app-key'] || null } })) <= 0 ? true : undefined
         })).rows
 
         const options = { where: new ActionsSevice().getAndArr(req.body), include: [{ association: 'customer', attributes: [] }, { association: 'actionType', attributes: [] }] }
         res.json({
-            ...await new ActionsSevice().getAll(req.body),
+            ...await new ActionsSevice().getAll({ ...req.body, ...(req.isAdmin ? {} : { owner: req.owner }) }),
             extras: {
                 mainCurrency: mainCurrency.name,
                 actionTypes,
@@ -70,6 +70,8 @@ actions.post('/', async (req, res, next) => {
 
 actions.post('/reports', async (req, res, next) => {
     try {
+        if (!req.isAdmin) throw CustomError.accessDeniedequest()
+
         res.json({
             ...await new ActionsSevice().getReports(req.body)
         })

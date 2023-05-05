@@ -14,6 +14,7 @@ const appRoute = require('./src/routes');
 const initializeDB = require('./src/db/migrations');
 const aishService = require('./src/services/aish.service');
 const aishTransactionsService = require('./src/services/transactions.service');
+const authMiddleware = require('./src/middleware/auth.middleware');
 
 async function start() {
     await initializeDB()
@@ -29,8 +30,16 @@ async function start() {
     app.use(express.json({ limit: '50mb' }))
     app.use(cookieParser())
 
+    app.use(authMiddleware)
     app.use('/', appRoute)
     app.use(errorMiddleware)
+
+    /* --------------SERVE CLIENT------------------- */
+    app.use(express.static(path.resolve(__dirname, '../client/build')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+    });
+    /* --------------SERVE CLIENT------------------- */
 
     aishService.start()
     aishTransactionsService.start()

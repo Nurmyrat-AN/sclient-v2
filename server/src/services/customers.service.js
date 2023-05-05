@@ -21,7 +21,7 @@ class CustomersService {
         }]
 
         if (barcodes) {
-            andArr.push(Sequelize.literal(`JSON_CONTAINS(barcodes, '"${barcodes}"', '$')`))
+            andArr.push(Sequelize.literal(`JSON_CONTAINS(\`customer\`.barcodes, '"${barcodes}"', '$')`))
         }
 
         if (percent) {

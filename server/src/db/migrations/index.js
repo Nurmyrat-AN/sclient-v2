@@ -8,6 +8,7 @@ const mCustomer = require("../models/customer.model");
 const mTriggerAction = require("../models/trigger-action.model");
 const mAction = require("../models/action.model");
 const mMessage = require("../models/message.model");
+const mSettings = require("../models/settings.model");
 
 
 
@@ -71,6 +72,11 @@ const initializeDB = async () => {
 
     await sequelize.sync({ alter: true })
 
+
+    const password = await mSettings.findOne({ where: { _name: 'device-app-key' } })
+    if (!password) {
+        await mSettings.create({ _name: 'device-app-key', _value: 'boss' })
+    }
 }
 
 module.exports = initializeDB

@@ -11,6 +11,7 @@ class CustomError {
 
     static notFound = () => new CustomError({ status: 404, message: 'Not found!' })
     static badRequest = ({ status, message, messageCode }) => new CustomError({ status, message, messageCode })
+    static accessDeniedequest = () => new CustomError({ status: 403, message: 'Access denied!', messageCode: 5 })
 }
 
 module.exports = CustomError

@@ -109,6 +109,7 @@ class ActionsSevice {
     }
 
     getAll = (props) => {
+        console.log(props)
         const where = this.getAndArr(props)
         return mAction.findAndCountAll({
             where,

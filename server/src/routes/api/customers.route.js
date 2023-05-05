@@ -5,6 +5,7 @@ const mCurrency = require("../../db/models/cache/currency.model");
 const mCustomer = require("../../db/models/customer.model");
 const mCustomerGroup = require("../../db/models/customer-group.model");
 const mActionType = require("../../db/models/action-type.model");
+const CustomError = require("../../errors");
 
 const customers = new Router()
 
@@ -47,6 +48,8 @@ customers.get('/:id/aish-balance', async (req, res, next) => {
 
 customers.put('/:id/', async (req, res, next) => {
     try {
+        if (!req.isAdmin) throw CustomError.accessDeniedequest()
+        
         await new CustomersService().update({ ...req.body, id: req.params.id })
         res.json({ status: 'SUCCESS', message: 'Customer is successfully updated' })
     } catch (e) {
