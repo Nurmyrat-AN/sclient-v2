@@ -55,7 +55,7 @@ actions.post('/', async (req, res, next) => {
         res.json({
             ...await new ActionsSevice().getAll({ ...req.body, ...(req.isAdmin ? {} : { owner: req.owner }) }),
             extras: {
-                mainCurrency: mainCurrency.name,
+                mainCurrency: mainCurrency?.name || 'TMT',
                 actionTypes,
                 actionType: req.body.actionTypeId ? await mActionType.findByPk(req.body.actionTypeId) : null,
                 amountSum: await mAction.sum('amount', options),
