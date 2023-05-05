@@ -10,7 +10,7 @@ const mAction = sequelize.define('action', {
     messageId: DataTypes.INTEGER,
     action_type: { type: DataTypes.ENUM('NONE', 'REMOVE', 'ADD', 'REMOVE_PERCENT', 'ADD_PERCENT'), defaultValue: 'NONE' },
     aish_balance: DataTypes.DECIMAL(60, 2),
-    transactionId: { type: DataTypes.STRING, defaultValue: null, allowNull: true },
+    transactionId: DataTypes.INTEGER,
     hasMessage: { type: DataTypes.BOOLEAN, defaultValue: true },
     note: DataTypes.STRING,
     deletedNote: DataTypes.STRING,

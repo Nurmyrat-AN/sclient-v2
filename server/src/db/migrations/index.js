@@ -9,6 +9,7 @@ const mTriggerAction = require("../models/trigger-action.model");
 const mAction = require("../models/action.model");
 const mMessage = require("../models/message.model");
 const mSettings = require("../models/settings.model");
+const mTransaction = require("../models/cache/transaction.model");
 
 
 
@@ -65,6 +66,7 @@ const initializeDB = async () => {
     mAction.hasMany(mAction, { as: 'subActions', foreignKey: 'actionId' })
     mAction.belongsTo(mAction, { as: 'parentAction', foreignKey: 'actionId' })
     mAction.belongsTo(mMessage, { as: 'message', foreignKey: 'messageId' })
+    mAction.belongsTo(mTransaction, { as: 'transaction', foreignKey: 'transactionId' })
     //****************************************** MIGRATIONS ******************************************* */
 
 

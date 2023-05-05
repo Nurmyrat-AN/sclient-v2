@@ -3,13 +3,12 @@ const mAction = require("../db/models/action.model")
 const mActionType = require("../db/models/action-type.model")
 const mCustomer = require("../db/models/customer.model")
 const CustomError = require("../errors")
-const AishService = require("./aish.service")
 const numberQuerySql = require("../utils/numbersql.utils")
 const moment = require('moment')
 
 class ActionsSevice {
     getAndArr = props => {
-        const { customerId, actionTypeId, aish_balance, amount, balance, customer = '', percent, res, owner = '', enddate, startdate, isSent, customerIds } = props
+        const { sendableMessages, customerId, actionTypeId, aish_balance, amount, balance, customer = '', percent, res, owner = '', enddate, startdate, isSent, customerIds } = props
 
         const andArr = [
             {
@@ -23,6 +22,13 @@ class ActionsSevice {
                 ]
             }
         ]
+
+        if (sendableMessages) {
+            andArr.push({
+                hasMessage: true,
+                messageId: { [Op.eq]: null }
+            })
+        }
 
         if (actionTypeId) andArr.push({ actionTypeId })
 
@@ -109,7 +115,6 @@ class ActionsSevice {
     }
 
     getAll = (props) => {
-        console.log(props)
         const where = this.getAndArr(props)
         return mAction.findAndCountAll({
             where,
@@ -118,7 +123,7 @@ class ActionsSevice {
                     [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=action.id AND a1.customerId=action.customerId)`), 'balance']
                 ]
             },
-            include: ['customer', 'actionType', 'message', {
+            include: ['customer', 'actionType', 'message', 'transaction', {
                 association: 'parentAction',
                 attributes: {
                     include: [

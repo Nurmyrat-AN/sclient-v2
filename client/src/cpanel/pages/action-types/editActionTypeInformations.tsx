@@ -176,7 +176,7 @@ export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
     )
 }
 
-type MESSAGE_PATTERNS_TYPE = '{date}' | '{client}' | '{balance}' | '{amount}' | '{res}' | '{aish_balance}' | '{note}'
+type MESSAGE_PATTERNS_TYPE = '{date}' | '{client}' | '{balance}' | '{amount}' | '{res}' | '{aish_balance}' | '{note}' | '{code}' | '{total_sum_before_discount}'
 const EditMessage = ({ message, setMessage }: { message: string, setMessage: (message: string) => void }) => {
     const [selectionIndex, setSelectionIndex] = React.useState(message.length)
 
@@ -202,7 +202,7 @@ const EditMessage = ({ message, setMessage }: { message: string, setMessage: (me
                     }}
                 />
             </ListItem>
-            <ListItem style={{ alignItems: 'stretch', justifyContent: 'space-between', paddingTop: 0, marginTop: 0 }}>
+            <ListItem style={{ alignItems: 'stretch', justifyContent: 'start', paddingTop: 0, marginTop: 0, flexWrap: 'wrap' }}>
                 <Button onClick={() => handleAddPattern(`{date}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Sene</Button>
                 <Button onClick={() => handleAddPattern(`{client}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Müşderi</Button>
                 <Button onClick={() => handleAddPattern(`{balance}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Galyndy</Button>
@@ -210,6 +210,7 @@ const EditMessage = ({ message, setMessage }: { message: string, setMessage: (me
                 <Button onClick={() => handleAddPattern(`{res}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Netije</Button>
                 <Button onClick={() => handleAddPattern(`{aish_balance}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Aish Balance</Button>
                 <Button onClick={() => handleAddPattern(`{note}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Bellik</Button>
+                <Button onClick={() => handleAddPattern(`{code}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Faktura kody</Button>
             </ListItem>
         </>
     )
