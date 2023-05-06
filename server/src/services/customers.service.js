@@ -18,6 +18,8 @@ class CustomersService {
                 { name: { [Op.like]: `%${name}%` } },
                 { phone_number: { [Op.like]: `%${name}%` } },
             ],
+        }, {
+            isactive: true
         }]
 
         if (barcodes) {
