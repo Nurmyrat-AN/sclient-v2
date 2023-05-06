@@ -19,7 +19,7 @@ class CustomersService {
                 { phone_number: { [Op.like]: `%${name}%` } },
             ],
         }, {
-            isactive: true
+            _isactive: true
         }]
 
         if (barcodes) {
