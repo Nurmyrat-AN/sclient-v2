@@ -86,7 +86,7 @@ class AishTransactionsService {
                         continue;
                     }
                     if (isCreated) continue;
-                    new ActionsSevice().createActions({ actionType: _aType, customers: [_customer], note: _dbTransactions.note, owner: 'BRIDGE', transactionId: _dbTransactions.id, amount: _tr.total_sum })
+                    new ActionsSevice().createActions({ actionType: _aType, customers: [_customer], note: _dbTransactions.note, owner: 'AISH-AUTOMATIC', transactionId: _dbTransactions.id, amount: _tr.total_sum })
                     console.log('Created!')
                 }
             }
