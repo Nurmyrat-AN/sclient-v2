@@ -58,10 +58,11 @@ export const EditActionType = (props: EDIT_ACTION_TYPE_PROPS) => {
                     </div>
                 </div>
             </DialogContent>
-            <DialogActions>
-                <Button variant='contained' style={{ marginLeft: 10 }} disabled={!state.id} color='error' size='small' onClick={handleDelete}>Poz</Button>
-                <Button variant='contained' style={{ marginLeft: 10 }} disabled={!state.name} size='small' onClick={handleSave}>Ýatda sakla</Button>
-            </DialogActions>
+            {windowState === 'INFORMATIONS' &&
+                <DialogActions>
+                    <Button variant='contained' style={{ marginLeft: 10 }} disabled={!state.id} color='error' size='small' onClick={handleDelete}>Poz</Button>
+                    <Button variant='contained' style={{ marginLeft: 10 }} disabled={!state.name} size='small' onClick={handleSave}>Ýatda sakla</Button>
+                </DialogActions>}
         </Dialog>
     )
 }

@@ -5,11 +5,11 @@ const mActionType = require("../models/action-type.model");
 const mTrigger = require("../models/triggers.model");
 const mCustomerGroup = require("../models/customer-group.model");
 const mCustomer = require("../models/customer.model");
-const mTriggerAction = require("../models/trigger-action.model");
 const mAction = require("../models/action.model");
 const mMessage = require("../models/message.model");
 const mSettings = require("../models/settings.model");
 const mTransaction = require("../models/cache/transaction.model");
+const TriggersService = require("../../services/triggers.service");
 
 
 
@@ -55,11 +55,11 @@ const initializeDB = async () => {
 
     //****************************************** MIGRATIONS ******************************************* */
     mActionType.hasMany(mTrigger, { as: 'triggers', foreignKey: 'actionTypeId' })
-    mTrigger.hasMany(mTriggerAction, { as: 'triggerActions', foreignKey: 'triggerId' })
-    mTriggerAction.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_trigger_action_vs_customer_groups' })
     mCustomerGroup.belongsToMany(mCustomer, { as: 'customers', through: 'zzz_customer_vs_groups' })
     mCustomer.belongsToMany(mCustomerGroup, { as: 'groups', through: 'zzz_customer_vs_groups' })
     mActionType.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_action_type_vs_customer_groups' })
+
+    mTrigger.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_trigger_vs_customer_groups' })
 
     mAction.belongsTo(mCustomer, { as: 'customer', foreignKey: 'customerId' })
     mAction.belongsTo(mActionType, { as: 'actionType', foreignKey: 'actionTypeId' })
@@ -67,6 +67,12 @@ const initializeDB = async () => {
     mAction.belongsTo(mAction, { as: 'parentAction', foreignKey: 'actionId' })
     mAction.belongsTo(mMessage, { as: 'message', foreignKey: 'messageId' })
     mAction.belongsTo(mTransaction, { as: 'transaction', foreignKey: 'transactionId' })
+
+    mAction.afterCreate(new TriggersService().onCreateAction)
+    mAction.afterBulkCreate(actions => actions.map(action => new TriggersService().onCreateAction(action)))
+
+    mAction.afterDestroy(new TriggersService().onDestroyAction)
+    mAction.afterBulkDestroy(actions => actions.map(action => new TriggersService().onDestroyAction(action)))
     //****************************************** MIGRATIONS ******************************************* */
 
 

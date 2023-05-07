@@ -16,7 +16,7 @@ class ActionTypesService {
         return await mActionType.findAndCountAll({
             where: andArr,
             paranoid: hideDeleted,
-            include: ['triggers', 'attachedGroups', {
+            include: ['attachedGroups', {
                 association: new HasOne(mCustomer, mActionType, { as: 'customer', foreignKey: 'id' }),
                 on: {
                     _id: { [Op.eq]: Sequelize.literal('`action-type`.`secondCustomer`') }

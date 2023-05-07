@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const customers = require("./customers.route");
-const actionTypes = require("./action.types.route");
+const actionTypes = require("./action-types/action.types.route");
 const customerGroups = require("./customer-groups.route");
 const actions = require("./actions.route");
 const settings = require("./settings.route");

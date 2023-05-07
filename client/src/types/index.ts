@@ -52,9 +52,13 @@ export type ACTION_MODEL = {
     balance: number
     aish_balance: number
     owner: string
+    note: string
     parentAction: ACTION_MODEL | null
     messageId: number | null
+    hasMessage: boolean
+    deletedAt?: string
     message: { message: string } | null
+    transaction?: TRANSACTION_TYPE
 }
 
 type TRANSACTION_TYPE = {
@@ -80,3 +84,24 @@ type TRANSACTION_TYPE = {
     total_sum_before_discount: number,
     total_sum: number,
 }
+
+export type EDIT_TRIGGER_TYPE = {
+    id?: number
+    onAction: 'onDelete' | 'onInsert'
+    minAmount: number
+    maxAmount: number
+    attachToAllCustomers: boolean
+    attachedGroups?: CUSTOMER_GROUP_MODEL[]
+    actions: TRIGGER_ACTION_TYPE[]
+}
+
+export type TRIGGER_ACTION_TYPE = {
+    type: 'CREATE_ACTION' | 'ADD_TO_GROUP' | 'REMOVE_FROM_GROUP'
+    actionAmountCalculation: string
+    customerGroupId?: number | null
+    actionTypeId?: number | null
+    customerGroup?: CUSTOMER_GROUP_MODEL | null
+    actionType?: ACTION_TYPE_MODEL | null
+}
+
+export type TRIGGER_TYPE = EDIT_TRIGGER_TYPE & { id: number }

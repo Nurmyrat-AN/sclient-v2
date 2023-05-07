@@ -1,28 +1,21 @@
-import { Autocomplete, Button, Card, FormControl, FormControlLabel, FormLabel, IconButton, InputAdornment, List, ListItem, ListItemSecondaryAction, Radio, RadioGroup, Switch, TextField } from "@mui/material";
-import { CUSTOMER_GROUP_MODEL, CUSTOMER_MODEL } from "../../../types";
+import { Autocomplete, Button, FormControl, FormControlLabel, FormLabel, InputAdornment, List, ListItem, Radio, RadioGroup, Switch, TextField } from "@mui/material";
 
 import { ActionType_TYPE_AutoComplete as ActionTypeTypeAutoComplete } from "../../../components/ActionType_TYPE_AutoComplete";
 import { AsyncAutoComplete } from "../../../components/AsyncAutoComplete";
-import { DeleteOutlined } from "@mui/icons-material";
+import { CUSTOMER_MODEL } from "../../../types";
 import { EDIT_ACTION_TYPE_PROPS } from "./types";
 import React from "react";
+import { SelectCustomerGroups } from "./components";
 import { _axios } from "../../../config/request";
 import { transactionTypes } from "../../../types/transactions";
 
 let controllerCustomers = new AbortController()
-let controllerCustomerGroups = new AbortController()
 export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
     const { state, setState } = props
     const getCustomers: (query?: string) => Promise<CUSTOMER_MODEL[]> = async query => {
         controllerCustomers.abort()
         controllerCustomers = new AbortController()
         const { data: { rows } } = await _axios.post(`/customers`, { name: query, limit: 100 }, { signal: controllerCustomers.signal })
-        return rows
-    }
-    const getCustomerGroups = async (query?: string) => {
-        controllerCustomerGroups.abort()
-        controllerCustomerGroups = new AbortController()
-        const { data: { rows } } = await _axios.post(`/customer-groups`, { name: query, limit: 100 }, { signal: controllerCustomerGroups.signal })
         return rows
     }
     return (
@@ -144,34 +137,7 @@ export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
             {state.isAutomatic && <ListItem>
                 <FormControlLabel style={{ flexGrow: 1 }} label='Ähli müşderilere degişli' control={<Switch checked={state.attachToAllCustomers} onChange={() => setState(state => ({ ...state, attachToAllCustomers: !state.attachToAllCustomers, attachedGroups: [] }))} />} />
             </ListItem>}
-            {state.isAutomatic && !state.attachToAllCustomers && <ListItem>
-                <Card style={{ flexGrow: 1 }}>
-                    <List>
-                        <ListItem>
-                            <AsyncAutoComplete<CUSTOMER_GROUP_MODEL>
-                                getOptionsAsync={getCustomerGroups}
-                                label="Toparlar"
-                                getOptionsLabel={option => option.name}
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
-                                value={null}
-                                onChange={(e, value) => !value || state.attachedGroups.find(g => g.id === value.id) ? null : setState(state => ({ ...state, attachedGroups: [...state.attachedGroups, value] }))}
-                            />
-                        </ListItem>
-                        <ListItem>
-                            <Card style={{ flexGrow: 1, height: 350, overflow: 'auto' }}>
-                                <List>
-                                    {state.attachedGroups.map(group => <ListItem key={group.id}>
-                                        {group.name}
-                                        <ListItemSecondaryAction>
-                                            <IconButton onClick={() => setState(state => ({ ...state, attachedGroups: state.attachedGroups.filter(g => g.id !== group.id) }))} size='small'><DeleteOutlined fontSize="small" /></IconButton>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>)}
-                                </List>
-                            </Card>
-                        </ListItem>
-                    </List>
-                </Card>
-            </ListItem>}
+            {state.isAutomatic && !state.attachToAllCustomers && <SelectCustomerGroups attachedGroups={state.attachedGroups} onChange={attachedGroups => setState(state => ({ ...state, attachedGroups }))} />}
         </List>
     )
 }

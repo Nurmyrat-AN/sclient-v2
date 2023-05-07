@@ -35,6 +35,20 @@ actions.post('/datas', async (req, res, next) => {
     }
 })
 
+actions.put('/delete', async (req, res, next) => {
+    try {
+        const action = await mAction.findByPk(req.body.id)
+        if (!action) throw CustomError.notFound()
+        await action.update({ deletedNote: req.body.note })
+        await action.destroy()
+        await action.update({ deletedAt: null })
+        res.json({ status: 'SUCCESS', message: 'Action is successfully deleted' })
+    } catch (e) {
+        next(e)
+    }
+})
+
+
 actions.put('/', async (req, res, next) => {
     try {
         res.json(await new ActionsSevice().createActions({ ...req.body, owner: req.cookies['pc_name'] }))
@@ -42,7 +56,6 @@ actions.put('/', async (req, res, next) => {
         next(e)
     }
 })
-
 
 actions.post('/', async (req, res, next) => {
     try {

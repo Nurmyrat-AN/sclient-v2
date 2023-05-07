@@ -8,7 +8,7 @@ const moment = require('moment')
 
 class ActionsSevice {
     getAndArr = props => {
-        const { sendableMessages, customerId, actionTypeId, aish_balance, amount, balance, customer = '', percent, res, owner = '', enddate, startdate, isSent, customerIds } = props
+        const { sendableMessages, customerId, actionTypeId, aish_balance, amount, balance, customer = '', percent, res, note, owner = '', enddate, startdate, isSent, customerIds } = props
 
         const andArr = [
             {
@@ -31,6 +31,8 @@ class ActionsSevice {
         }
 
         if (actionTypeId) andArr.push({ actionTypeId })
+
+        if (note) andArr.push({ note })
 
         if (customerId) andArr.push({ customerId })
 
@@ -69,7 +71,7 @@ class ActionsSevice {
         return andArr
     }
 
-    createActions = async ({ actionType, amount, customers, transactionId = null, note, owner }) => {
+    createActions = async ({ actionType, amount, customers, transactionId = null, note, owner, actionId }) => {
         const _actionType = await mActionType.findByPk(actionType.id)
         const _customers = await mCustomer.findAll({ where: { id: { [Op.in]: customers.map(c => c.id) } } })
 
@@ -108,6 +110,7 @@ class ActionsSevice {
                 transactionId: transactionId,
                 note: note,
                 owner: owner,
+                actionId
             })
         }
 
@@ -130,7 +133,9 @@ class ActionsSevice {
                         [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=parentAction.id AND a1.customerId=parentAction.customerId)`), 'balance']
                     ]
                 },
+                paranoid: false
             }],
+            paranoid: props.hideDeleted,
             limit: props.limit,
             offset: props.offset,
             order: [['createdAt', 'DESC']]
