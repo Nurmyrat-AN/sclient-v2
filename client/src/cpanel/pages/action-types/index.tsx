@@ -132,6 +132,7 @@ const EditOrAdd = (props: { actionType?: ACTION_TYPE_MODEL, refresh: () => void 
     return (
         <TableCell width={10}>
             <IconButton size='small' onClick={() => setEdit(props.actionType || {
+                hasParentInvoice: false,
                 isAutomatic: false,
                 action_type: 'NONE',
                 actionAlertAmount: 0,

@@ -23,6 +23,7 @@ export type EDIT_ACTION_TYPE_MODEL = {
     isAutomatic: boolean
     attachToAllCustomers: boolean
     isMenuOption: boolean
+    hasParentInvoice: boolean
     transactionType: string | null
     paymentTypes: string[]
     mainCustomer?: number | null

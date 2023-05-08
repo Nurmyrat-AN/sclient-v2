@@ -59,6 +59,7 @@ class AishTransactionsService {
 
                     /*---------------------------*/
                     if (_tr.payment_type && !_aType.paymentTypes.includes(_tr.payment_type)) continue;
+                    if (_aType.hasParentInvoice && _tr.parent_invoice.length === 0) continue;
                     const _customer = await mCustomer.findOne({ where: { _id: _aType.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1 } })
                     if (!_customer) continue;
                     if (_aType.secondCustomer && _aType !== (_aType.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1)) continue;

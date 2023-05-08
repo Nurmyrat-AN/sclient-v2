@@ -12,6 +12,7 @@ const mActionType = sequelize.define('action-type', {
     hasMessage: { type: DataTypes.BOOLEAN, defaultValue: false },
     isAutomatic: { type: DataTypes.BOOLEAN, defaultValue: false },
     isMenuOption: { type: DataTypes.BOOLEAN, defaultValue: false },
+    hasParentInvoice: { type: DataTypes.BOOLEAN, defaultValue: false },
     transactionType: { type: DataTypes.STRING, defaultValue: null, allowNull: true },
     mainCustomer: { type: DataTypes.INTEGER, defaultValue: null, allowNull: true },
     secondCustomer: { type: DataTypes.STRING, defaultValue: null, allowNull: true },

@@ -99,7 +99,7 @@ export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
                     onChange={(e, value) => setState(state => ({ ...state, transactionType: value?.transactionType || null, paymentTypes: value?.paymentTypes || [] }))}
                 />
             </ListItem>}
-            {state.transactionType && <ListItem>
+            {state.transactionType && (transactionTypes.find(tr => tr.transactionType === state.transactionType)?.paymentTypes || []).length > 0 && <ListItem>
                 <Autocomplete
                     options={transactionTypes.find(tr => tr.transactionType === state.transactionType)?.paymentTypes || []}
                     fullWidth
@@ -109,6 +109,9 @@ export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
                     value={state.paymentTypes}
                     onChange={(e, values) => setState(state => ({ ...state, paymentTypes: values }))}
                 />
+            </ListItem>}
+            {state.isAutomatic && <ListItem>
+                <FormControlLabel style={{ flexGrow: 1 }} label='Ene fakturasy bolmaly (Mysal üçin Giriş/Töleg [Faktura tölegi we Özbaşdak hereket)' control={<Switch checked={state.hasParentInvoice} onChange={() => setState(state => ({ ...state, hasParentInvoice: !state.attachToAllCustomers }))} />} />
             </ListItem>}
             {state.isAutomatic && <ListItem>
                 <FormControl>
