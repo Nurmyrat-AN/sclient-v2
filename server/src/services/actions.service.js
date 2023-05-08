@@ -45,7 +45,6 @@ class ActionsSevice {
         if (percent) andArr.push(numberQuerySql({ col: Sequelize.literal('`action`.percent'), num: percent }))
         if (balance) andArr.push(numberQuerySql({ col: balanceCol, num: balance }))
         if (aish_balance) andArr.push(numberQuerySql({ col: Sequelize.literal('`action`.aish_balance'), num: aish_balance }))
-        console.log(isSent)
         if (isSent !== 'undefined') andArr.push({ messageId: { [isSent === 'true' ? Op.ne : Op.eq]: null } })
         if (startdate) {
             const start = new Date(startdate);
