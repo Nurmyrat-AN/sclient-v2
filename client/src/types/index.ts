@@ -58,7 +58,7 @@ export type ACTION_MODEL = {
     messageId: number | null
     hasMessage: boolean
     deletedAt?: string
-    message: { message: string } | null
+    message?: { message: string } | null
     transaction?: TRANSACTION_TYPE
 }
 
