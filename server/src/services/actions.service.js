@@ -5,6 +5,7 @@ const mCustomer = require("../db/models/customer.model")
 const CustomError = require("../errors")
 const numberQuerySql = require("../utils/numbersql.utils")
 const moment = require('moment')
+const socketService = require("./socket.service")
 
 class ActionsSevice {
     getAndArr = props => {
@@ -115,7 +116,9 @@ class ActionsSevice {
             })
         }
 
-        return await mAction.bulkCreate(actions)
+        const result = await mAction.bulkCreate(actions)
+        socketService.emitNewMessage()
+        return result
     }
 
     getAll = (props) => {
