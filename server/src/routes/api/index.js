@@ -8,6 +8,7 @@ const aish = require("./aish.route");
 const devices = require("./devices.route");
 const messageService = require("../../services/message.service");
 const zipService = require("../../services/zip.service");
+const ActionsSevice = require("../../services/actions.service");
 
 const api = Router()
 
@@ -21,8 +22,7 @@ api.use('/settings', settings)
 
 api.get('/getSendableMessages', async (req, res, next) => {
     try {
-        return res.send(await zipService.zip({ data: await messageService.getSendableMassages() }))
-        res.status(404).json()
+        return res.send(await zipService.zip({ data: await messageService.getSendableMassages({ actions: (await new ActionsSevice().getAll({ sendableMessages: true })).rows }) }))
     } catch (e) {
         next(e)
     }

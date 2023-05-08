@@ -1,6 +1,5 @@
 const mAction = require("../db/models/action.model")
 const mMessage = require("../db/models/message.model")
-const ActionsSevice = require("./actions.service")
 const moment = require('moment')
 
 class MessageService {
@@ -22,16 +21,12 @@ class MessageService {
         return true
     }
 
-    getSendableMassages = async () => {
-        const actions = (await new ActionsSevice().getAll({ sendableMessages: true })).rows
-        const data = actions.map(action => ({
-            client_name: action.customer.name,
-            id: action.id,
-            message: getMessage(action.toJSON()),
-            phone: action.customer.phone_number
-        }))
-        return data
-    }
+    getSendableMassages = async ({ actions }) => actions.map(action => ({
+        client_name: action.customer.name,
+        id: action.id,
+        message: getMessage(action.toJSON()),
+        phone: action.customer.phone_number
+    }))
 
 }
 
