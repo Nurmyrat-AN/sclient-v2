@@ -6,6 +6,7 @@ const mCustomer = require("../../db/models/customer.model");
 const mCustomerGroup = require("../../db/models/customer-group.model");
 const mActionType = require("../../db/models/action-type.model");
 const CustomError = require("../../errors");
+const { Op } = require("sequelize");
 
 const customers = new Router()
 
@@ -46,10 +47,20 @@ customers.get('/:id/aish-balance', async (req, res, next) => {
     }
 })
 
-customers.put('/:id/', async (req, res, next) => {
+customers.put('/global', async (req, res, next) => {
+    try {
+        const { customers, percent } = req.body
+        await mCustomer.update({ percent }, { where: { id: { [Op.in]: customers } } })
+        res.json({ status: 'SUCCESS', message: 'Customers are successfully updated' })
+    } catch (e) {
+        next(e)
+    }
+})
+
+customers.put('/:id([0-9]+)', async (req, res, next) => {
     try {
         if (!req.isAdmin) throw CustomError.accessDeniedequest()
-        
+
         await new CustomersService().update({ ...req.body, id: req.params.id })
         res.json({ status: 'SUCCESS', message: 'Customer is successfully updated' })
     } catch (e) {

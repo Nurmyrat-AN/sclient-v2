@@ -168,12 +168,12 @@ class TriggersService {
                         }, {
                             [Op.or]: [
                                 { minAmount: 0 },
-                                { minAmount: { [Op.gte]: action.amount } }
+                                { minAmount: { [Op.lte]: action.amount } }
                             ]
                         }, {
                             [Op.or]: [
                                 { maxAmount: 0 },
-                                { maxAmount: { [Op.lte]: action.amount } }
+                                { maxAmount: { [Op.gte]: action.amount } }
                             ]
                         }, {
                             [Op.or]: [

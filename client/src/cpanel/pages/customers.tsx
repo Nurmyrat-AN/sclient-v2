@@ -12,6 +12,7 @@ import { CustomTablePagination } from "../../components/CustomTablePagination"
 import { QueryListContainer } from "../../containers/querylist.container"
 import React from "react"
 import { _axios } from "../../config/request"
+import { confirmAlert } from "react-confirm-alert"
 import moment from 'moment'
 import { useGlobalLoading } from "../../context/globalloading"
 import { useSearchParams } from 'react-router-dom'
@@ -90,7 +91,7 @@ export const CustomersPage = (props: { groupId?: number }) => {
                         <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
-                                    <SelectionBtn options={options} selected={selected} setSelected={setSelected} filter={filter} customers={rows} />
+                                    <SelectionBtn refresh={refresh} options={options} selected={selected} setSelected={setSelected} filter={filter} customers={rows} />
                                     <TableCell><TextField size="small" fullWidth value={filter.name} label='Ady' onChange={e => setFilter(filter => ({ ...filter, name: e.target.value, offset: 0 }))} /></TableCell>
                                     <TableCell><TextField size="small" fullWidth value={filter.barcodes} label='Ştrihkod' onChange={e => setFilter(filter => ({ ...filter, barcodes: e.target.value, offset: 0 }))} /></TableCell>
                                     {!props.groupId && <TableCell>
@@ -191,14 +192,17 @@ export const CustomersPage = (props: { groupId?: number }) => {
     )
 }
 
-const SelectionBtn = ({ selected, setSelected, customers, filter, options }: {
+const SelectionBtn = ({ selected, setSelected, customers, filter, options, refresh }: {
     options: (customers: number[]) => {
         onClick?: (...args: any) => void;
-        label?: string | undefined;
-        customTitle?: any;
-    }[], filter: Filter, customers: CUSTOMER_MODEL[], selected: number[], setSelected: React.Dispatch<React.SetStateAction<number[]>>
+        label?: string | undefined
+        customTitle?: any
+    }[],
+    refresh: () => void, filter: Filter, customers: CUSTOMER_MODEL[], selected: number[], setSelected: React.Dispatch<React.SetStateAction<number[]>>
 }) => {
     const [anchorEl, setAnchorEl] = React.useState<any>(null)
+    const [globalPercent, setGlobalPercent] = React.useState<string | null>(null)
+    const [confirmState, setConfirmState] = React.useState(false)
     const { endLoading, startLoading } = useGlobalLoading()
     const customSelect: (action: 'all_by_filter' | 'all_in_list' | 'reverse_in_list' | 'reverse_by_filter' | 'clear') => Promise<void> = async (action) => {
         setAnchorEl(null)
@@ -234,10 +238,43 @@ const SelectionBtn = ({ selected, setSelected, customers, filter, options }: {
                 break
         }
     }
+
+    const handleChangeGlobalPercent = () => {
+        setConfirmState(true)
+        confirmAlert({
+            title: 'Herekedi tassyklamak',
+            message: `Bu hereketden soňra müşderileriň oňki göterimlerine getirmek automatiki mümkin däldir. Ýatda saklansynmy?`,
+            buttons: [{
+                label: 'Hawa',
+                onClick: async () => {
+                    startLoading()
+                    try {
+                        await _axios.put('/customers/global', { customers: selected, percent: globalPercent })
+                        setSelected([])
+                        setGlobalPercent(null)
+                        refresh()
+                    } catch (e) { }
+                    setConfirmState(false)
+                    endLoading()
+                }
+            }, {
+                label: 'Ýok',
+                onClick: () => setConfirmState(false)
+            }],
+            closeOnClickOutside: false,
+            closeOnEscape: false
+        })
+    }
+
     return (
         <TableCell align='center'>
             <CustomContextMenu
-                options={selected.length > 0 ? options(selected) : []}>
+                options={selected.length > 0 ? [...options(selected), {
+                    customTitle: <div style={{ flexGrow: 1 }}><Divider /></div>
+                }, {
+                    label: 'Göterim üýtget',
+                    onClick: () => setGlobalPercent('0')
+                }] : []}>
                 <Button
                     onClick={e => setAnchorEl(e.currentTarget)}
                     startIcon={
@@ -252,6 +289,22 @@ const SelectionBtn = ({ selected, setSelected, customers, filter, options }: {
                     <Typography variant='caption' style={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>{selected.length}</Typography>
                 </Button>
             </CustomContextMenu>
+            {globalPercent !== null && <Dialog open onClose={() => confirmState ? null : setGlobalPercent(null)}>
+                <DialogTitle>{`Saýlanan: ${selected.length}`}</DialogTitle>
+                <DialogContent style={{ paddingTop: 16 }}>
+                    <TextField
+                        label={'Göterimleri toparlaýyn üýtget'}
+                        size='small'
+                        type='number'
+                        autoFocus
+                        value={globalPercent}
+                        onChange={e => setGlobalPercent(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleChangeGlobalPercent} variant='contained' size='small' fullWidth disabled={isNaN(parseFloat(globalPercent))}>Ýatda sakla</Button>
+                </DialogActions>
+            </Dialog>}
             <Menu
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
