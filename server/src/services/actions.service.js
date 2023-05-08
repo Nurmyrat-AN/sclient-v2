@@ -26,8 +26,9 @@ class ActionsSevice {
         if (sendableMessages) {
             andArr.push({
                 hasMessage: true,
-                messageId: { [Op.eq]: null }
+                messageId: { [Op.eq]: null },
             })
+            andArr.push(Sequelize.where(Sequelize.literal(`customer.phone_number`), 'LIKE', `+993%`))
         }
 
         if (actionTypeId) andArr.push({ actionTypeId })
