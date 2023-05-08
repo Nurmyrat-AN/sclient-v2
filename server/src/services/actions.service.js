@@ -130,15 +130,18 @@ class ActionsSevice {
                     [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=action.id AND a1.customerId=action.customerId)`), 'balance']
                 ]
             },
-            include: ['customer', 'actionType', 'message', 'transaction', {
-                association: 'parentAction',
-                attributes: {
-                    include: [
-                        [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=parentAction.id AND a1.customerId=parentAction.customerId)`), 'balance']
-                    ]
-                },
+            include: ['customer', {
+                association: 'actionType',
                 paranoid: false
-            }],
+            }, 'message', 'transaction', {
+                    association: 'parentAction',
+                    attributes: {
+                        include: [
+                            [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=parentAction.id AND a1.customerId=parentAction.customerId)`), 'balance']
+                        ]
+                    },
+                    paranoid: false
+                }],
             paranoid: props.hideDeleted,
             limit: props.limit,
             offset: props.offset,
