@@ -13,7 +13,7 @@ actions.post('/datas', async (req, res, next) => {
     try {
         const customers = (await new CustomersService().getAll({ ids: req.body.customers, barcodes: req.body.barcodes, limit: req.body.customers.length || 1000 })).rows
         const actionTypes = (await new ActionTypesService().getAll({
-            isGlobal: (await mSettings.count({ where: { _name: 'device-app-key', _value: req.cookies['device-app-key'] } })) <= 0 ? true : undefined
+            isGlobal: (await mSettings.count({ where: { _name: 'device-app-key', _value: req.cookies['device-app-key'] || null } })) <= 0 ? true : undefined
         })).rows
         let actionTypeId = req.body.actionTypeId
         if (!actionTypeId) {

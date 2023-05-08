@@ -3,7 +3,7 @@ import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogT
 import React from "react"
 import { _axios } from "../config/request"
 
-type AUTH_TYPE = { pc_name?: string, isAdmin?: boolean }
+type AUTH_TYPE = { pc_name?: string, isAdmin?: boolean, hasAccessToApp?: boolean }
 
 const Context = React.createContext<{ auth: AUTH_TYPE, refresh: () => void }>({ auth: {}, refresh: console.log })
 
@@ -34,11 +34,12 @@ export const AuthContainer = ({ children }: { children: any }) => {
     return loadingStatus.loading ?
         loadingComponent
         : loadingStatus.error ? errorComponent
-            : !auth.pc_name ? <EditPcName refresh={() => setRetry(!retry)} />
-                : <Context.Provider value={{
-                    auth,
-                    refresh: () => setRetry(!retry)
-                }}>{children}</Context.Provider>
+            : !auth.hasAccessToApp ? <EditPasswordForApp refresh={() => setRetry(!retry)} />
+                : !auth.pc_name ? <EditPcName refresh={() => setRetry(!retry)} />
+                    : <Context.Provider value={{
+                        auth,
+                        refresh: () => setRetry(!retry)
+                    }}>{children}</Context.Provider>
 }
 
 const EditPcName = (props: { refresh: () => void }) => {
@@ -96,6 +97,41 @@ export const EditPassword = (props: { refresh: () => void, onClose?: () => void 
                     disabled={loading}
                     size='small'
                     label='Gizlin kod'
+                    autoFocus
+                    type='password'
+                    value={pc}
+                    onChange={e => setPc(e.target.value)}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleSave} disabled={loading} size='small'>Ulgama gir</Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+
+const EditPasswordForApp = (props: { refresh: () => void, onClose?: () => void }) => {
+    const [pc, setPc] = React.useState('')
+    const [loading, setLoading] = React.useState(false)
+    const handleSave = async () => {
+        if (loading || !pc) return;
+        setLoading(true)
+        try {
+            await _axios.put('/devices/cookies', { _key: 'main-app-key', _value: pc })
+            props.refresh()
+        } catch (e) {
+            setLoading(false)
+        }
+    }
+    return (
+        <Dialog open onClose={props.onClose}>
+            <DialogTitle>Giriş gizlin kodyňyz</DialogTitle>
+            <DialogContent style={{ paddingTop: 16 }}>
+                <TextField
+                    disabled={loading}
+                    size='small'
+                    label='Giriş gizlin kodyňyz'
                     autoFocus
                     type='password'
                     value={pc}

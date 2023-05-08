@@ -4,7 +4,7 @@ const __cookieConfig = require("../../config/cookie-config");
 const devices = new Router()
 
 devices.get('/verify', (req, res) => {
-    res.json({ pc_name: req.owner, isAdmin: req.isAdmin })
+    res.json({ pc_name: req.owner, isAdmin: req.isAdmin, hasAccessToApp: req.hasAccessToApp })
 })
 
 

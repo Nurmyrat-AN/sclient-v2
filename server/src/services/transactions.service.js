@@ -19,6 +19,7 @@ class AishTransactionsService {
     getData = async () => {
         const settingsService = new SettingsService()
         const host = await settingsService.get_host_url()
+        if (!host) return;
         let _transaction_sequence_number = (await mSettings.findOne({ where: { _name: '_transaction_sequence_number' } }))?._value
         const bridge = (await mSettings.findOne({ where: { _name: 'bridgeKey' } }))?._value
         if (_transaction_sequence_number === undefined || bridge !== undefined) return;

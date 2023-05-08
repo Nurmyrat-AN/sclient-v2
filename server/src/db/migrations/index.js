@@ -85,6 +85,12 @@ const initializeDB = async () => {
     if (!password) {
         await mSettings.create({ _name: 'device-app-key', _value: 'boss' })
     }
+
+
+    const mainPassword = await mSettings.findOne({ where: { _name: 'main-app-key' } })
+    if (!mainPassword) {
+        await mSettings.create({ _name: 'main-app-key', _value: 'boss' })
+    }
 }
 
 module.exports = initializeDB

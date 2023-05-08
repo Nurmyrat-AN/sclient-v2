@@ -10,7 +10,7 @@ class SettingsService {
 
     get_host_url = async () => {
         const _settings = await mSettings.findOne({ where: { _name: '_host_url' } })
-        return _settings?._value || this._host_url
+        return _settings?._value
     }
 
     set_sequence_number = async (_sequence_number = 0) => {
