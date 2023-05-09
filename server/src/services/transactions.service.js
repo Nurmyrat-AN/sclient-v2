@@ -78,7 +78,7 @@ class AishTransactionsService {
                             where: {
                                 [Op.and]: [
                                     Sequelize.where(Sequelize.literal(`(SELECT COUNT(*) FROM zzz_customer_vs_groups WHERE zzz_customer_vs_groups.customerGroupId=\`customer-group\`.id AND zzz_customer_vs_groups.customerId=${_customer.id})`), '>', Sequelize.literal('0')),
-                                    Sequelize.where(Sequelize.literal(`(SELECT COUNT(*) FROM zzz_action_type_transactions_vs_customer_groups WHERE zzz_action_type_transactions_vs_customer_groups.customerGroupId=\`customer-group\`.id AND zzz_action_type_transactions_vs_customer_groups.actionTypeId=${_aTransaction.id})`), '>', Sequelize.literal('0')),
+                                    Sequelize.where(Sequelize.literal(`(SELECT COUNT(*) FROM zzz_action_type_transactions_vs_customer_groups WHERE zzz_action_type_transactions_vs_customer_groups.customerGroupId=\`customer-group\`.id AND zzz_action_type_transactions_vs_customer_groups.actionTypeTransactionId=${_aTransaction.id})`), '>', Sequelize.literal('0')),
                                 ]
                             }
                         })
