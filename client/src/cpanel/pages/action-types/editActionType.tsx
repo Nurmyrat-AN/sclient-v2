@@ -1,5 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, ListItemText } from "@mui/material";
 
+import { AutomaticTransactions } from "./editActionTypeAutomaticTransactions";
 import { EDIT_ACTION_TYPE_PROPS } from "./types";
 import { Informations } from "./editActionTypeInformations";
 import React from "react";
@@ -10,7 +11,7 @@ import { useGlobalLoading } from "../../../context/globalloading";
 
 export const EditActionType = (props: EDIT_ACTION_TYPE_PROPS) => {
     const { state, refresh, onClose } = props
-    const [windowState, setWindowState] = React.useState<'INFORMATIONS' | 'TRIGGERS'>('INFORMATIONS')
+    const [windowState, setWindowState] = React.useState<'INFORMATIONS' | 'TRANSACTIONS' | 'TRIGGERS'>('INFORMATIONS')
     const { endLoading, startLoading } = useGlobalLoading()
 
     const handleSave = async () => {
@@ -45,13 +46,18 @@ export const EditActionType = (props: EDIT_ACTION_TYPE_PROPS) => {
                     <div style={{ display: 'flex', flexGrow: 1 }}>
                         <Button onClick={() => setWindowState('INFORMATIONS')} size='small' color={windowState === 'INFORMATIONS' ? 'primary' : 'inherit'}>Esasy maglumatlar</Button>
                         <Button size='small' disabled style={{ margin: '0 5px', minWidth: 0 }}>/</Button>
+                        <Button onClick={() => setWindowState('TRANSACTIONS')} size='small' color={windowState === 'TRANSACTIONS' ? 'primary' : 'inherit'}>Automatic transactions</Button>
+                        <Button size='small' disabled style={{ margin: '0 5px', minWidth: 0 }}>/</Button>
                         <Button onClick={() => setWindowState('TRIGGERS')} size='small' color={windowState === 'TRIGGERS' ? 'primary' : 'inherit'}>Triggers</Button>
                     </div>
                     <Divider />
                 </>}
                 <div style={{ display: 'flex', overflow: 'hidden', alignItems: 'stretch' }}>
-                    <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', marginLeft: windowState === 'INFORMATIONS' ? '0' : '-100%' }}>
+                    <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', marginLeft: windowState === 'INFORMATIONS' ? '0' : windowState === 'TRANSACTIONS' ? '-100%' : '-200%' }}>
                         <Informations {...props} />
+                    </div>
+                    <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', display: 'flex', flexDirection: 'column' }}>
+                        <AutomaticTransactions {...props} />
                     </div>
                     <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', display: 'flex', flexDirection: 'column' }}>
                         <Triggers {...props} />

@@ -1,23 +1,11 @@
-import { Autocomplete, Button, FormControl, FormControlLabel, FormLabel, InputAdornment, List, ListItem, Radio, RadioGroup, Switch, TextField } from "@mui/material";
+import { Button, FormControlLabel, InputAdornment, List, ListItem, Switch, TextField } from "@mui/material";
 
 import { ActionType_TYPE_AutoComplete as ActionTypeTypeAutoComplete } from "../../../components/ActionType_TYPE_AutoComplete";
-import { AsyncAutoComplete } from "../../../components/AsyncAutoComplete";
-import { CUSTOMER_MODEL } from "../../../types";
 import { EDIT_ACTION_TYPE_PROPS } from "./types";
 import React from "react";
-import { SelectCustomerGroups } from "./components";
-import { _axios } from "../../../config/request";
-import { transactionTypes } from "../../../types/transactions";
 
-let controllerCustomers = new AbortController()
 export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
     const { state, setState } = props
-    const getCustomers: (query?: string) => Promise<CUSTOMER_MODEL[]> = async query => {
-        controllerCustomers.abort()
-        controllerCustomers = new AbortController()
-        const { data: { rows } } = await _axios.post(`/customers`, { name: query, limit: 100 }, { signal: controllerCustomers.signal })
-        return rows
-    }
     return (
         <List>
             <ListItem>
@@ -85,62 +73,6 @@ export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
                 message={state.message}
                 setMessage={message => setState(state => ({ ...state, message }))}
             />}
-            <ListItem>
-                <FormControlLabel style={{ flexGrow: 1 }} label='Automatic transaction' control={<Switch checked={state.isAutomatic} onChange={() => setState(state => ({ ...state, isAutomatic: !state.isAutomatic, transactionType: null, paymentTypes: [], mainCustomer: null, secondCustomer: null, customer: null }))} />} />
-            </ListItem>
-            {state.isAutomatic && <ListItem>
-                <Autocomplete
-                    options={transactionTypes}
-                    fullWidth
-                    size='small'
-                    getOptionLabel={option => option.transactionType}
-                    renderInput={props => <TextField {...props} label='Hereket görnüşi' />}
-                    value={transactionTypes.find(tr => tr.transactionType === state.transactionType) || null}
-                    onChange={(e, value) => setState(state => ({ ...state, transactionType: value?.transactionType || null, paymentTypes: value?.paymentTypes || [] }))}
-                />
-            </ListItem>}
-            {state.transactionType && (transactionTypes.find(tr => tr.transactionType === state.transactionType)?.paymentTypes || []).length > 0 && <ListItem>
-                <Autocomplete
-                    options={transactionTypes.find(tr => tr.transactionType === state.transactionType)?.paymentTypes || []}
-                    fullWidth
-                    multiple
-                    size='small'
-                    renderInput={props => <TextField {...props} label='Töleg görnüşi' />}
-                    value={state.paymentTypes}
-                    onChange={(e, values) => setState(state => ({ ...state, paymentTypes: values }))}
-                />
-            </ListItem>}
-            {state.isAutomatic && <ListItem>
-                <FormControlLabel style={{ flexGrow: 1 }} label='Ene fakturasy bolmaly (Mysal üçin Giriş/Töleg [Faktura tölegi we Özbaşdak hereket)' control={<Switch checked={state.hasParentInvoice} onChange={() => setState(state => ({ ...state, hasParentInvoice: !state.attachToAllCustomers }))} />} />
-            </ListItem>}
-            {state.isAutomatic && <ListItem>
-                <FormControl>
-                    <FormLabel>Esasy müşderi</FormLabel>
-                    <RadioGroup
-                        value={(state.mainCustomer || 1).toString()}
-                        onChange={(e, value) => setState(state => ({ ...state, mainCustomer: parseInt(value) }))}
-                        style={{ flexDirection: 'row' }}
-                    >
-                        <FormControlLabel value={'1'} control={<Radio />} label="1-nji müşderi" />
-                        <FormControlLabel value={'2'} control={<Radio />} label="2-nji müşderi" />
-                    </RadioGroup>
-                </FormControl>
-            </ListItem>}
-            {state.isAutomatic && <ListItem>
-                <AsyncAutoComplete<CUSTOMER_MODEL>
-                    label='Beýleki müşderi'
-                    initialOptions={state.customer ? [state.customer] : []}
-                    getOptionsAsync={getCustomers}
-                    getOptionsLabel={option => option.name}
-                    isOptionEqualToValue={(option, value) => option._id === value._id}
-                    value={state.customer}
-                    onChange={(e, value) => setState(state => ({ ...state, secondCustomer: value?._id || null, customer: value }))}
-                />
-            </ListItem>}
-            {state.isAutomatic && <ListItem>
-                <FormControlLabel style={{ flexGrow: 1 }} label='Ähli müşderilere degişli' control={<Switch checked={state.attachToAllCustomers} onChange={() => setState(state => ({ ...state, attachToAllCustomers: !state.attachToAllCustomers, attachedGroups: [] }))} />} />
-            </ListItem>}
-            {state.isAutomatic && !state.attachToAllCustomers && <SelectCustomerGroups attachedGroups={state.attachedGroups} onChange={attachedGroups => setState(state => ({ ...state, attachedGroups }))} />}
         </List>
     )
 }

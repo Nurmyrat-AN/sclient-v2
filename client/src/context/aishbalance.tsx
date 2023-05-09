@@ -8,6 +8,7 @@ type Balance = {
     loading: boolean
     error: boolean
     balance?: string
+    date?: Date
 }
 type Store = {
     balances: Balance[]
@@ -39,20 +40,30 @@ export class AishBalanceContextWrapper extends React.Component<{ children: any }
 
     syncBalances = async () => {
         if (this.state.loading) return;
-        const balance = this.state.balances.find(b => !b.balance)
+        const balance = this.state.balances.find(b =>
+            (!b.balance && !b.error) || ((new Date().getTime() - (b.date || new Date()).getTime()) / 1000 / 60) > 3
+        )
+
         if (!balance) return;
+
+        if (!balance.loading) {
+            return this.setState(state => ({
+                ...state,
+                balances: state.balances.map(b => b.id === balance.id ? ({ ...b, loading: true }) : b)
+            }))
+        }
 
         try {
             const { data } = await _axios.get(`/customers/${balance.id}/aish-balance`)
             this.setState(state => ({
                 ...state,
-                balances: state.balances.map(b => b.id === balance.id ? ({ ...b, balance: data, loading: false }) : b),
+                balances: state.balances.map(b => b.id === balance.id ? ({ ...b, balance: data, loading: false, date: new Date() }) : b),
                 loading: false
             }))
         } catch (e) {
             this.setState(state => ({
                 ...state,
-                balances: state.balances.map(b => b.id === balance.id ? ({ ...b, error: true, loading: false }) : b),
+                balances: state.balances.map(b => b.id === balance.id ? ({ ...b, error: true, loading: false, date: new Date() }) : b),
                 loading: false
             }))
         }

@@ -20,20 +20,26 @@ export type EDIT_ACTION_TYPE_MODEL = {
     actionAlertAmount: number
     isGlobal: boolean
     hasMessage: boolean
-    isAutomatic: boolean
-    attachToAllCustomers: boolean
     isMenuOption: boolean
+    tertip: number
+    action_type: 'NONE' | 'REMOVE' | 'ADD' | 'REMOVE_PERCENT' | 'ADD_PERCENT'
+    deletedAt?: null | string
+}
+
+export type EDIT_ACTION_TYPE_TRANSACTION_TYPE = {
+    id?: number
+    attachToAllCustomers: boolean
     hasParentInvoice: boolean
     transactionType: string | null
     paymentTypes: string[]
     mainCustomer?: number | null
     secondCustomer?: string | null
-    tertip: number
-    action_type: 'NONE' | 'REMOVE' | 'ADD' | 'REMOVE_PERCENT' | 'ADD_PERCENT'
-    deletedAt?: null | string
     customer?: CUSTOMER_MODEL | null
     attachedGroups: CUSTOMER_GROUP_MODEL[]
 }
+
+export type ACTION_TYPE_TRANSACTION_TYPE = EDIT_ACTION_TYPE_TRANSACTION_TYPE & { id: number }
+
 export type ACTION_TYPE_MODEL = { id: number, } & EDIT_ACTION_TYPE_MODEL
 
 export type EDIT_CUSTOMER_GROUP_MODEL = {

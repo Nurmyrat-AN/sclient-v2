@@ -2,6 +2,7 @@ const { Router } = require("express");
 const ActionTypesService = require("../../../services/action.types.service");
 const CustomError = require("../../../errors");
 const triggers = require("./triggers.route");
+const automatictransactions = require("./automatictransactions");
 
 const actionTypes = new Router()
 
@@ -34,10 +35,12 @@ actionTypes.delete('/:id', async (req, res, next) => {
     }
 })
 
-actionTypes.use('/:actionTypeId([0-9]+)/triggers', (req, rex, next) => {
+actionTypes.use('/:actionTypeId([0-9]+)', (req, rex, next) => {
     req.actionTypeId = req.params.actionTypeId
     next()
 })
+
 actionTypes.use('/:actionTypeId([0-9]+)/triggers', triggers)
+actionTypes.use('/:actionTypeId([0-9]+)/automatictransactions', automatictransactions)
 
 module.exports = actionTypes

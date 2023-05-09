@@ -8,8 +8,10 @@ const { Op, Sequelize } = require("sequelize")
 const mTransaction = require("../db/models/cache/transaction.model")
 const ActionsSevice = require("./actions.service")
 const mAction = require("../db/models/action.model")
+const mActionTypeTransactions = require("../db/models/action-type.transactions")
 
 class AishTransactionsService {
+    users = {}
     timer = null
     start = () => {
         if (this.timer) clearTimeout(this.timer)
@@ -36,6 +38,8 @@ class AishTransactionsService {
     }
 
     saveRows = async (rows) => {
+        const settingsService = new SettingsService()
+        const host = await settingsService.get_host_url()
         let _transaction_sequence_number = 0
         const rowsCopy = [...rows]
         while (rowsCopy.length) {
@@ -45,51 +49,77 @@ class AishTransactionsService {
             const _transactions = [...transaction.lst_invoices, ...transaction.lst_cashtransactions]
             while (_transactions.length) {
                 const _tr = _transactions.shift()
-                const actionTypes = await mActionType.findAll({
-                    where: {
-                        isAutomatic: true,
-                        transactionType: _tr.transaction_type,
-                    }
-                })
-                if (actionTypes.length === 0) continue;
-                while (actionTypes.length) {
-                    const _aType = actionTypes.shift()
+                const automatictransactions = await mActionTypeTransactions.findAll({ where: { transactionType: _tr.transaction_type, } })
 
-                    console.log('start checking...')
+
+                if (automatictransactions.length === 0) continue;
+                while (automatictransactions.length) {
+                    const _aTransaction = automatictransactions.shift()
+
+                    // Start checking...
 
                     /*---------------------------*/
-                    if (_tr.payment_type && !_aType.paymentTypes.includes(_tr.payment_type)) continue;
-                    if (_aType.hasParentInvoice && _tr.parent_invoice.length === 0) continue;
-                    const _customer = await mCustomer.findOne({ where: { _id: _aType.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1 } })
+                    // Check payments
+                    if (_tr.payment_type && !(_aTransaction.paymentTypes || []).includes(_tr.payment_type)) continue;
+
+                    // Check parent invoices
+                    if ((_aTransaction.hasParentInvoice && (_tr.parent_invoice || '').length === 0) || (!_aTransaction.hasParentInvoice && (_tr.parent_invoice || '').length > 0)) continue;
+
+                    // Check existing customer
+                    const _customer = await mCustomer.findOne({ where: { _id: _aTransaction.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1 } })
                     if (!_customer) continue;
-                    if (_aType.secondCustomer && _aType !== (_aType.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1)) continue;
-                    if (!_aType.attachToAllCustomers) {
+
+                    // Check second customer
+                    if (_aTransaction.secondCustomer && _aTransaction !== (_aTransaction.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1)) continue;
+
+                    // Check attachment
+                    if (!_aTransaction.attachToAllCustomers) {
                         const group = await mCustomerGroup.findOne({
                             where: {
                                 [Op.and]: [
                                     Sequelize.where(Sequelize.literal(`(SELECT COUNT(*) FROM zzz_customer_vs_groups WHERE zzz_customer_vs_groups.customerGroupId=\`customer-group\`.id AND zzz_customer_vs_groups.customerId=${_customer.id})`), '>', Sequelize.literal('0')),
-                                    Sequelize.where(Sequelize.literal(`(SELECT COUNT(*) FROM zzz_action_type_vs_customer_groups WHERE zzz_action_type_vs_customer_groups.customerGroupId=\`customer-group\`.id AND zzz_action_type_vs_customer_groups.actionTypeId=${_aType.id})`), '>', Sequelize.literal('0')),
+                                    Sequelize.where(Sequelize.literal(`(SELECT COUNT(*) FROM zzz_action_type_vs_customer_groups WHERE zzz_action_type_vs_customer_groups.customerGroupId=\`customer-group\`.id AND zzz_action_type_vs_customer_groups.actionTypeId=${_aTransaction.id})`), '>', Sequelize.literal('0')),
                                 ]
                             }
                         })
                         if (!group) continue;
                     }
+
+                    // Check existing action type
+                    const actionType = await mActionType.findByPk(_aTransaction.actionTypeId)
+                    if (!actionType) continue;
                     /*---------------------------*/
 
 
-                    const _dbTransactions = (await mTransaction.findOrCreate({ where: { _id: _tr._id } }))[0]
-                    await _dbTransactions.update({ ...([...transaction.lst_invoices, ...transaction.lst_cashtransactions].find(t => t._id === _tr.parent_invoice) || {}), ..._tr, })
 
-                    console.log('Ready!')
-                    const isCreated = await mAction.findOne({ where: { customerId: _customer.id, transactionId: _dbTransactions.id, }, paranoid: false })
+                    const _dbTransactions = (await mTransaction.findOrCreate({ where: { _id: _tr._id } }))[0]
+                    const parentInvoice = ([...transaction.lst_invoices, ...transaction.lst_cashtransactions].find(t => t._id === (_tr?.parent_invoice || '')) || {})
+                    await _dbTransactions.update([...Object.keys(parentInvoice), Object.keys(_tr)].reduce((res, k) => ({ ...res, [k]: _tr[k] || parentInvoice[k] }), {}))
+
+                    const isCreated = await mAction.findOne({ where: { customerId: _customer.id, transactionId: _dbTransactions.id, actionTypeId: _aTransaction.actionTypeId }, paranoid: false })
                     if (_tr.markedasinvalid_date && isCreated) {
                         await isCreated.update({ deletedNote: _tr.markedasinvalid_note })
                         await isCreated.destroy()
                         continue;
                     }
+
+                    // Check creation dublicate
                     if (isCreated) continue;
-                    new ActionsSevice().createActions({ actionType: _aType, customers: [_customer], note: _dbTransactions.note, owner: 'AISH-AUTOMATIC', transactionId: _dbTransactions.id, amount: _tr.total_sum })
-                    console.log('Created!')
+
+                    let ownerUser = 'AISH'
+                    if (this.users[_tr.lasteditby]) {
+                        ownerUser = this.users[_tr.lasteditby]
+                    } else {
+                        try {
+                            const { data } = await axios.get(`${host}/cachedobjects?id=${_tr.lasteditby}`)
+                            ownerUser = data[0]?.name || data.name
+                            if (ownerUser) this.users[_tr.lasteditby] = ownerUser
+                        } catch (e) { }
+                    }
+
+                    // Ready creation!
+                    const result = await new ActionsSevice().createActions({ actionType, customers: [_customer], note: _dbTransactions.note, owner: `${ownerUser} (AUTOMATIC)`, transactionId: _dbTransactions.id, amount: _tr.total_sum })
+                    console.log('Created automatic action!', result.map(r => r.toJSON()))
                 }
             }
 

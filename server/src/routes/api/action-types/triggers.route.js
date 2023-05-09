@@ -5,7 +5,7 @@ const triggers = new Router()
 
 triggers.post('/', async (req, res, next) => {
     try {
-        res.json(await new TriggersService(req.actionTypeId).getAll())
+        res.json(await new TriggersService(req.actionTypeId || 0).getAll())
     } catch (e) {
         next(e)
     }
@@ -13,7 +13,7 @@ triggers.post('/', async (req, res, next) => {
 
 triggers.put('/', async (req, res, next) => {
     try {
-        const service = new TriggersService(req.actionTypeId)
+        const service = new TriggersService(req.actionTypeId || 0)
         const task = req.body.id ? service.update(req.body) : service.create(req.body)
         res.json(await task)
     } catch (e) {
@@ -25,7 +25,7 @@ triggers.put('/', async (req, res, next) => {
 
 triggers.delete('/:id', async (req, res, next) => {
     try {
-        res.json(await new TriggersService(req.actionTypeId).delete(req.params.id))
+        res.json(await new TriggersService(req.actionTypeId || 0).delete(req.params.id))
     } catch (e) {
         next(e)
     }

@@ -6,6 +6,7 @@ const CustomError = require("../errors")
 const numberQuerySql = require("../utils/numbersql.utils")
 const moment = require('moment')
 const socketService = require("./socket.service")
+const CustomersService = require("./customers.service")
 
 class ActionsSevice {
     getAndArr = props => {
@@ -21,6 +22,10 @@ class ActionsSevice {
                 [Op.or]: [
                     Sequelize.where(Sequelize.literal('`action`.owner'), 'LIKE', `%${owner}%`),
                 ]
+            }, {
+                [Op.or]: [
+                    Sequelize.where(Sequelize.literal('`action`.note'), 'LIKE', `%${note}%`),
+                ]
             }
         ]
 
@@ -33,8 +38,6 @@ class ActionsSevice {
         }
 
         if (actionTypeId) andArr.push({ actionTypeId })
-
-        if (note) andArr.push({ note })
 
         if (customerId) andArr.push({ customerId })
 
@@ -91,7 +94,7 @@ class ActionsSevice {
         const actions = []
         while (_customers.length) {
             const c = _customers.shift()
-            let aish_balance = null
+            let aish_balance = 0
             if (actionType.action_type === 'NONE') {
                 aish_balance = await new CustomersService().getAishBalance(c._id)
             } else {
