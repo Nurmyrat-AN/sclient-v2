@@ -7,7 +7,7 @@ export const DateCell = ({ query, homePage, colSpan = 1, onChange }: { query: an
     const startDateRef = React.useRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>
     const endDateRef = React.useRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>
     const handleChange = () => {
-        console.log('Input changed: ', { date1: startDateRef?.current?.value, date2: startDateRef?.current?.value })
+        console.log('Input changed: ', { date1: startDateRef?.current?.value, date2: endDateRef?.current?.value })
     }
     return (
         <DateContainer onChange={({ date1, date2 }) => {
