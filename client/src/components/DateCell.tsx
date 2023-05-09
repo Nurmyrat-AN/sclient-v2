@@ -7,12 +7,13 @@ export const DateCell = ({ query, homePage, colSpan = 1, onChange }: { query: an
     const startDateRef = React.useRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>
     const endDateRef = React.useRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>
     const handleChange = () => {
-        console.log(startDateRef?.current?.value, startDateRef?.current?.value)
+        console.log('Input changed: ', { date1: startDateRef?.current?.value, date2: startDateRef?.current?.value })
     }
     return (
         <DateContainer onChange={({ date1, date2 }) => {
             if (startDateRef.current) startDateRef.current.value = date1
             if (endDateRef.current) endDateRef.current.value = date2
+            console.log('Function setted: ', { date1, date2 })
             onChange?.({ date1, date2 })
         }}>
             <TableCell colSpan={colSpan} align='center'>
