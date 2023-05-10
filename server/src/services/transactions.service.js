@@ -9,6 +9,7 @@ const mTransaction = require("../db/models/cache/transaction.model")
 const ActionsSevice = require("./actions.service")
 const mAction = require("../db/models/action.model")
 const mActionTypeTransactions = require("../db/models/action-type.transactions")
+const aishService = require("./aish.service")
 
 class AishTransactionsService {
     users = {}
@@ -125,6 +126,10 @@ class AishTransactionsService {
 
 
             _transaction_sequence_number = _transaction_sequence_number > transaction._sequence_number ? _transaction_sequence_number : transaction._sequence_number
+        }
+
+        if (rows.find(r => r.lst_invoices.length > 0)) {
+            aishService._syncAishProducts()
         }
         return _transaction_sequence_number
     }

@@ -82,41 +82,7 @@ aish.post('/upload', async (req, res, next) => {
 
 aish.get('/products', async (req, res, next) => {
     try {
-        const HOST = await new SettingsService().get_host_url()
-        const { data: result } = await axios.get(`${HOST}/stocksofproducts`)
-        const warehouses = (await mWarehouse.findAll()).reduce((res, w) => ({ ...res, [w._id]: w.name }), {})
-        const products = await Promise.all((await mProduct.findAll({
-            where: {
-                _isactive: true
-            },
-            attributes: {
-                include: [
-                    [Sequelize.literal(`product_currency.name`), 'currency'],
-                    [Sequelize.literal(`product_measure.name`), 'measure'],
-                ]
-            },
-            include: [{
-                association: new BelongsTo(mProduct, mCurrency, { as: 'product_currency', foreignKey: 'currency', targetKey: '_id' }),
-                attributes: [],
-            }, {
-                association: new BelongsTo(mProduct, mMeasure, { as: 'product_measure', foreignKey: 'measure', targetKey: '_id' }),
-                attributes: [],
-
-            }],
-        })).map(product => new Promise((resolve, reject) => {
-            const stocks = result.filter(r => r.product_id === product._id)
-            resolve({
-                ...product.toJSON(),
-                stock: stocks.reduce((res, pResult) => res + pResult.stock_in_main_measure, 0),
-                stocks: stocks.map(pResult => ({
-                    stock: pResult.stock_in_main_measure,
-                    warehouse_id: pResult.warehouse_id,
-                    warehouse: warehouses[pResult.warehouse_id],
-                }))
-            })
-        })))
-
-        res.json({ products, count: products.length, warehouses })
+        res.json(await aishService.getProducts())
     } catch (e) {
         next(e)
     }
