@@ -40,7 +40,7 @@ export const SettingsPage = () => {
                         <StringTableCell _key="_host_url" label="Server address" extras={extras?.settings || {}} refresh={refresh} />
                         <StringTableCell _key="device-app-key" label="Gizlin kod" extras={extras?.settings || {}} refresh={refresh} />
                         <StringTableCell _key="main-app-key" label="Esasy gizlin kod" extras={extras?.settings || {}} refresh={refresh} />
-                        <StringTableCell _key="bridgeKey" label="Köpri gizlin kody" defaultValue="???" extras={extras?.settings || {}} refresh={refresh} />
+                        {/* <StringTableCell _key="bridgeKey" label="Köpri gizlin kody" defaultValue="???" extras={extras?.settings || {}} refresh={refresh} /> */}
                         <StringTableCell _key="_request_interval" label="Maglumat alyş-çalyş interwaly" type='number' extras={extras?.settings || {}} refresh={refresh} />
                         <StringTableCell _key="_transaction_sequence_number" label="Hereket sequence number" type='number' defaultValue="---" extras={extras?.settings || {}} refresh={refresh} />
                         <StringTableCell _key="_sequence_number" label="Maglumat sequence number" type='number' defaultValue="---" extras={extras?.settings || {}} refresh={refresh} />

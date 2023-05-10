@@ -1,11 +1,15 @@
 const { Router } = require("express");
 const mSettings = require("../../db/models/settings.model");
 const CustomError = require("../../errors");
-const { Op } = require("sequelize");
+const { Op, BelongsTo, Sequelize } = require("sequelize");
 const aishTransactionsService = require("../../services/transactions.service");
 const aishService = require("../../services/aish.service");
 const SettingsService = require("../../services/settings.service");
 const { default: axios } = require("axios");
+const mProduct = require("../../db/models/cache/product.model");
+const mWarehouse = require("../../db/models/cache/warehouse.model");
+const mCurrency = require("../../db/models/cache/currency.model");
+const mMeasure = require("../../db/models/cache/measure.model");
 
 const aish = new Router()
 
@@ -80,9 +84,39 @@ aish.get('/products', async (req, res, next) => {
     try {
         const HOST = await new SettingsService().get_host_url()
         const { data: result } = await axios.get(`${HOST}/stocksofproducts`)
+        const warehouses = (await mWarehouse.findAll()).reduce((res, w) => ({ ...res, [w._id]: w.name }), {})
+        const products = await Promise.all((await mProduct.findAll({
+            where: {
+                _isactive: true
+            },
+            attributes: {
+                include: [
+                    [Sequelize.literal(`product_currency.name`), 'currency'],
+                    [Sequelize.literal(`product_measure.name`), 'measure'],
+                ]
+            },
+            include: [{
+                association: new BelongsTo(mProduct, mCurrency, { as: 'product_currency', foreignKey: 'currency', targetKey: '_id' }),
+                attributes: [],
+            }, {
+                association: new BelongsTo(mProduct, mMeasure, { as: 'product_measure', foreignKey: 'measure', targetKey: '_id' }),
+                attributes: [],
 
+            }],
+        })).map(product => new Promise((resolve, reject) => {
+            const stocks = result.filter(r => r.product_id === product._id)
+            resolve({
+                ...product.toJSON(),
+                stock: stocks.reduce((res, pResult) => res + pResult.stock_in_main_measure, 0),
+                stocks: stocks.map(pResult => ({
+                    stock: pResult.stock_in_main_measure,
+                    warehouse_id: pResult.warehouse_id,
+                    warehouse: warehouses[pResult.warehouse_id],
+                }))
+            })
+        })))
 
-        res.json({ result })
+        res.json({ products, count: products.length, warehouses })
     } catch (e) {
         next(e)
     }
