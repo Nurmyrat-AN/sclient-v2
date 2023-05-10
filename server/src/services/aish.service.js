@@ -7,6 +7,7 @@ const mBook = require("../db/models/cache/book.model")
 const mMeasure = require("../db/models/cache/measure.model")
 const mProduct = require("../db/models/cache/product.model")
 const mSettings = require("../db/models/settings.model")
+const mWarehouse = require("../db/models/cache/warehouse.model")
 
 class AishService {
     timer = null
@@ -54,6 +55,13 @@ class AishService {
                 case 'currency':
                     const currency = await mCurrency.findOrCreate({ where: { _id: cachedobject._id } })
                     await currency[0].update({
+                        name: cachedobject.name
+                    })
+                    break
+                    break
+                case 'warehouse':
+                    const warehouse = await mWarehouse.findOrCreate({ where: { _id: cachedobject._id } })
+                    await warehouse[0].update({
                         name: cachedobject.name
                     })
                     break
