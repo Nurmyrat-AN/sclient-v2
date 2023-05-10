@@ -4,6 +4,8 @@ const CustomError = require("../../errors");
 const { Op } = require("sequelize");
 const aishTransactionsService = require("../../services/transactions.service");
 const aishService = require("../../services/aish.service");
+const SettingsService = require("../../services/settings.service");
+const { default: axios } = require("axios");
 
 const aish = new Router()
 
@@ -43,6 +45,7 @@ aish.get('/upload', async (req, res, next) => {
         next(e)
     }
 })
+
 aish.post('/upload', async (req, res, next) => {
     try {
         const { rows, bridgeKey, isTransaction } = req.body
@@ -68,6 +71,18 @@ aish.post('/upload', async (req, res, next) => {
             const result = results[0]
             res.json(result)
         }
+    } catch (e) {
+        next(e)
+    }
+})
+
+aish.get('/products', async (req, res, next) => {
+    try {
+        const HOST = await new SettingsService().get_host_url()
+        const { data: result } = await axios.get(`${HOST}/stocksofproducts`)
+
+
+        res.json({ result })
     } catch (e) {
         next(e)
     }
