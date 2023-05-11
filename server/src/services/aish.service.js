@@ -138,58 +138,60 @@ class AishService {
     }
 
     _syncAishProducts = async () => {
-        if (this._aishProductsTimer) clearTimeout(this._aishProductsTimer)
-        const HOST = await new SettingsService().get_host_url()
-        const { data: resultAish } = await axios.get(`${HOST}/stocksofproducts`)
-        const warehouses = (await mWarehouse.findAll()).reduce((res, w) => ({ ...res, [w._id]: w.name }), {})
-        const products = await mProduct.findAll({
-            where: {
-                _isactive: true
-            },
-            attributes: {
-                include: [
-                    [Sequelize.literal(`product_currency.name`), 'currency'],
-                    [Sequelize.literal(`product_measure.name`), 'measure'],
-                ]
-            },
-            include: [{
-                association: new BelongsTo(mProduct, mCurrency, { as: 'product_currency', foreignKey: 'currency', targetKey: '_id' }),
-                attributes: [],
-            }, {
-                association: new BelongsTo(mProduct, mMeasure, { as: 'product_measure', foreignKey: 'measure', targetKey: '_id' }),
-                attributes: [],
+        try {
+            if (this._aishProductsTimer) clearTimeout(this._aishProductsTimer)
+            const HOST = await new SettingsService().get_host_url()
+            const { data: resultAish } = await axios.get(`${HOST}/stocksofproducts`)
+            const warehouses = (await mWarehouse.findAll()).reduce((res, w) => ({ ...res, [w._id]: w.name }), {})
+            const products = await mProduct.findAll({
+                where: {
+                    _isactive: true
+                },
+                attributes: {
+                    include: [
+                        [Sequelize.literal(`product_currency.name`), 'currency'],
+                        [Sequelize.literal(`product_measure.name`), 'measure'],
+                    ]
+                },
+                include: [{
+                    association: new BelongsTo(mProduct, mCurrency, { as: 'product_currency', foreignKey: 'currency', targetKey: '_id' }),
+                    attributes: [],
+                }, {
+                    association: new BelongsTo(mProduct, mMeasure, { as: 'product_measure', foreignKey: 'measure', targetKey: '_id' }),
+                    attributes: [],
 
-            }],
-        })
+                }],
+            })
 
-        const result = {
-            products: products.map(product => {
-                const stocks = resultAish.filter(r => r.product_id === product._id)
-                return {
-                    ...product.toJSON(),
-                    stock: stocks.reduce((res, pResult) => res + pResult.stock_in_main_measure, 0),
-                    stocks: stocks.map(pResult => ({
-                        stock: pResult.stock_in_main_measure,
-                        warehouse_id: pResult.warehouse_id,
-                        warehouse: warehouses[pResult.warehouse_id],
-                    }))
-                }
-            }),
-            count: products.length,
-            warehouses
-        }
-        this._aishProducts = {
-            result,
-            lastUpdated: new Date()
-        }
-        this._aishProductsTimer = setTimeout(this._syncAishProducts, 1000 * 60 * 5)
+            const result = {
+                products: products.map(product => {
+                    const stocks = resultAish.filter(r => r.product_id === product._id)
+                    return {
+                        ...product.toJSON(),
+                        stock: stocks.reduce((res, pResult) => res + pResult.stock_in_main_measure, 0),
+                        stocks: stocks.map(pResult => ({
+                            stock: pResult.stock_in_main_measure,
+                            warehouse_id: pResult.warehouse_id,
+                            warehouse: warehouses[pResult.warehouse_id],
+                        }))
+                    }
+                }),
+                count: products.length,
+                warehouses
+            }
+            this._aishProducts = {
+                result,
+                lastUpdated: new Date()
+            }
+            this._aishProductsTimer = setTimeout(this._syncAishProducts, 1000 * 60 * 5)
+        } catch (e) { }
     }
 
     getProducts = async () => {
         if (!this._aishProducts.result) {
             await this._syncAishProducts()
         }
-        return this._aishProducts.result
+        return this._aishProducts.result || { products: [], count: 0, warehouse: {} }
     }
 
 }
