@@ -183,8 +183,8 @@ class AishService {
                 result,
                 lastUpdated: new Date()
             }
-            this._aishProductsTimer = setTimeout(this._syncAishProducts, 1000 * 60 * 5)
         } catch (e) { }
+        this._aishProductsTimer = setTimeout(this._syncAishProducts, 1000 * 60 * 5)
     }
 
     getProducts = async () => {
