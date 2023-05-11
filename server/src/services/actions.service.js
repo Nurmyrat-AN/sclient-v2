@@ -113,7 +113,7 @@ class ActionsSevice {
                 action_type: _actionType.action_type,
                 aish_balance: aish_balance,
                 transactionId: transactionId,
-                note: note,
+                note: note || '',
                 owner: owner,
                 actionId
             })
