@@ -21,6 +21,9 @@ const initializeDB = async () => {
         password: process.env.DB_PASSWORD,
         multipleStatements: true
     })
+    connection.on('error', function (err) {
+        console.log('db error', err);
+    });
 
     await new Promise((resolve, reject) => {
         connection.query(`
@@ -60,7 +63,7 @@ const initializeDB = async () => {
     mCustomer.belongsToMany(mCustomerGroup, { as: 'groups', through: 'zzz_customer_vs_groups' })
     mActionType.hasMany(mActionTypeTransactions, { as: 'transactions', foreignKey: 'actionTypeId' })
     mActionTypeTransactions.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_action_type_transactions_vs_customer_groups' })
-    
+
     mTrigger.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_trigger_vs_customer_groups' })
 
     mAction.belongsTo(mCustomer, { as: 'customer', foreignKey: 'customerId' })
