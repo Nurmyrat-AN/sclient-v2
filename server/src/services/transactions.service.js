@@ -119,7 +119,7 @@ class AishTransactionsService {
                     }
 
                     // Ready creation!
-                    const result = await new ActionsSevice().createActions({ actionType, customers: [_customer], note: _dbTransactions.note, owner: `${ownerUser} (AUTOMATIC)`, transactionId: _dbTransactions.id, amount: _tr.total_sum })
+                    const result = await new ActionsSevice().createActions({ createdAt: _tr.lastediton, actionType, customers: [_customer], note: _dbTransactions.note, owner: `${ownerUser} (AUTOMATIC)`, transactionId: _dbTransactions.id, amount: _tr.total_sum })
                     console.log('Created automatic action!', result.map(r => r.toJSON()))
                 }
             }
