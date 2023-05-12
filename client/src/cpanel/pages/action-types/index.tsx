@@ -56,17 +56,22 @@ export const ActionTypesPage = () => {
                                 })}
                                 options={[true, false]}
                                 getOptionLabel={option => option ? 'Global' : 'Local'}
-                                renderInput={props => <TextField {...props} InputProps={{
-                                    ...props.InputProps,
-                                    style:{
-                                        minWidth: '0 !important'
-                                    },
-                                    startAdornment: <InputAdornment position='start'>
-                                        <IconButton onClick={() => setFilter(filter => ({ ...filter, offset: 0, hideDeleted: !filter.hideDeleted }))}>
-                                            <DeleteOutline color={filter.hideDeleted ? 'inherit' : 'error'} fontSize='small' />
-                                        </IconButton>
-                                    </InputAdornment>
-                                }} />}
+                                renderInput={props => <TextField {...props}
+                                    inputProps={{
+                                        ...props.inputProps,
+                                        style: {
+                                            ...props.inputProps.style,
+                                            minWidth: '0 !important'
+                                        },
+                                    }}
+                                    InputProps={{
+                                        ...props.InputProps,
+                                        startAdornment: <InputAdornment position='start'>
+                                            <IconButton onClick={() => setFilter(filter => ({ ...filter, offset: 0, hideDeleted: !filter.hideDeleted }))}>
+                                                <DeleteOutline color={filter.hideDeleted ? 'inherit' : 'error'} fontSize='small' />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }} />}
                             />
                         </TableCell>
                         <TableCell>
