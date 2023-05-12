@@ -38,7 +38,7 @@ export const ActionTypesPage = () => {
             renderList={({ data: { count, rows }, error, filter, loading, refresh, setFilter }) => <Table size='small' stickyHeader>
                 <TableHead>
                     <TableRow>
-                        <TableCell width={10}>
+                        <TableCell width={180}>
                             <Autocomplete
                                 size='small'
                                 fullWidth
@@ -58,6 +58,9 @@ export const ActionTypesPage = () => {
                                 getOptionLabel={option => option ? 'Global' : 'Local'}
                                 renderInput={props => <TextField {...props} InputProps={{
                                     ...props.InputProps,
+                                    style:{
+                                        minWidth: '0 !important'
+                                    },
                                     startAdornment: <InputAdornment position='start'>
                                         <IconButton onClick={() => setFilter(filter => ({ ...filter, offset: 0, hideDeleted: !filter.hideDeleted }))}>
                                             <DeleteOutline color={filter.hideDeleted ? 'inherit' : 'error'} fontSize='small' />
@@ -98,7 +101,7 @@ export const ActionTypesPage = () => {
                     {error && <TableRow><TableCell align="center" colSpan={6}><Button onClick={refresh} size='small'>{error}</Button></TableCell></TableRow>}
                     {!error && !loading && count === 0 && <TableRow><TableCell align="center" colSpan={6}>Tapylmady!</TableCell></TableRow>}
                     {rows.map(data => <TableRow key={data.id}>
-                        <TableCell width={10}>
+                        <TableCell width={180}>
                             <IconButton style={{ backgroundColor: data.actionColor }}>
                                 <IconButton component='div' size='small' style={{ padding: 1, backgroundColor: 'white' }}>
                                     {data.isGlobal ? <CheckOutlined fontSize='small' color="success" /> : <VisibilityOffOutlined fontSize='small' />}
