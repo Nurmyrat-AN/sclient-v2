@@ -7,7 +7,6 @@ const sequelize = new Sequelize({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     logging: false,
-    retry: { timeout: 60, max: 100 }
 });
 
 
