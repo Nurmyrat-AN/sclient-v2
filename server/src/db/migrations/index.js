@@ -21,10 +21,6 @@ const initializeDB = async () => {
         password: process.env.DB_PASSWORD,
         multipleStatements: true
     })
-    // connection.on('error', function (err) {
-    //     console.log('db error', err)
-    // })
-    connection.destroy()
 
     await new Promise((resolve, reject) => {
         connection.query(`
@@ -38,6 +34,12 @@ const initializeDB = async () => {
             }
         })
     })
+
+    
+    connection.on('error', function (err) {
+        console.log('db error', err)
+    })
+    connection.destroy()
 
     const scanDir = (out_path) => {
         const paths = fs.readdirSync(out_path)
