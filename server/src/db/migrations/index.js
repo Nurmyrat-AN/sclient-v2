@@ -22,8 +22,9 @@ const initializeDB = async () => {
         multipleStatements: true
     })
     connection.on('error', function (err) {
-        console.log('db error', err);
-    });
+        console.log('db error', err)
+    })
+    connection.destroy()
 
     await new Promise((resolve, reject) => {
         connection.query(`
