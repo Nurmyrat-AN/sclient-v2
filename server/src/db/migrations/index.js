@@ -21,9 +21,9 @@ const initializeDB = async () => {
         password: process.env.DB_PASSWORD,
         multipleStatements: true
     })
-    connection.on('error', function (err) {
-        console.log('db error', err)
-    })
+    // connection.on('error', function (err) {
+    //     console.log('db error', err)
+    // })
     connection.destroy()
 
     await new Promise((resolve, reject) => {
