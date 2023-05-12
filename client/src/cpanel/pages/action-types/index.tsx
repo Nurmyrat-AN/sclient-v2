@@ -61,7 +61,7 @@ export const ActionTypesPage = () => {
                                         ...props.inputProps,
                                         style: {
                                             ...props.inputProps.style,
-                                            minWidth: '0 !important'
+                                            minWidth: 0
                                         },
                                     }}
                                     InputProps={{
