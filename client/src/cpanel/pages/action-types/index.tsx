@@ -59,10 +59,7 @@ export const ActionTypesPage = () => {
                                 renderInput={props => <TextField {...props}
                                     inputProps={{
                                         ...props.inputProps,
-                                        style: {
-                                            ...props.inputProps.style,
-                                            minWidth: '0px !important'
-                                        },
+                                        ref: (el: any) => el && el.style.setProperty('min-width', '0', "important")
                                     }}
                                     InputProps={{
                                         ...props.InputProps,
