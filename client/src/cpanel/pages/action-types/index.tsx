@@ -57,10 +57,7 @@ export const ActionTypesPage = () => {
                                 options={[true, false]}
                                 getOptionLabel={option => option ? 'Global' : 'Local'}
                                 renderInput={props => <TextField {...props}
-                                    inputProps={{
-                                        ...props.inputProps,
-                                        ref: (el: any) => el && el.style.setProperty('min-width', '0', "important")
-                                    }}
+                                    inputRef={(el: any) => el && el.style.setProperty('min-width', '0', "important")}
                                     InputProps={{
                                         ...props.InputProps,
                                         startAdornment: <InputAdornment position='start'>
