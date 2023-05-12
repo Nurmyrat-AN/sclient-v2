@@ -38,7 +38,7 @@ export const ActionTypesPage = () => {
             renderList={({ data: { count, rows }, error, filter, loading, refresh, setFilter }) => <Table size='small' stickyHeader>
                 <TableHead>
                     <TableRow>
-                        <TableCell width={180}>
+                        <TableCell width={160}>
                             <Autocomplete
                                 size='small'
                                 fullWidth
@@ -100,8 +100,8 @@ export const ActionTypesPage = () => {
                     {error && <TableRow><TableCell align="center" colSpan={6}><Button onClick={refresh} size='small'>{error}</Button></TableCell></TableRow>}
                     {!error && !loading && count === 0 && <TableRow><TableCell align="center" colSpan={6}>Tapylmady!</TableCell></TableRow>}
                     {rows.map(data => <TableRow key={data.id}>
-                        <TableCell width={180}>
-                            <IconButton style={{ backgroundColor: data.actionColor }}>
+                        <TableCell width={160} align='center'>
+                            <IconButton component='div' style={{ backgroundColor: data.actionColor }}>
                                 <IconButton component='div' size='small' style={{ padding: 1, backgroundColor: 'white' }}>
                                     {data.isGlobal ? <CheckOutlined fontSize='small' color="success" /> : <VisibilityOffOutlined fontSize='small' />}
                                 </IconButton>
