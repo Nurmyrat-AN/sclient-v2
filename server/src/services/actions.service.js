@@ -10,7 +10,7 @@ const CustomersService = require("./customers.service")
 
 class ActionsSevice {
     getAndArr = props => {
-        const { sendableMessages, customerId, actionTypeId, aish_balance, amount, balance, customer = '', percent, res, note, owner = '', enddate, startdate, isSent, customerIds } = props
+        const { sendableMessages, customerId, actionTypeId, aish_balance, amount, balance, customer = '', percent, res, note = '', owner = '', enddate, startdate, isSent, customerIds } = props
 
         const andArr = [
             {
