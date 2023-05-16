@@ -76,7 +76,7 @@ class ActionsSevice {
         return andArr
     }
 
-    createActions = async ({ actionType, amount, customers, transactionId = null, note, owner, actionId }) => {
+    createActions = async ({ actionType, amount, customers, transactionId = null, note, owner, actionId, ...rest }) => {
         const _actionType = await mActionType.findByPk(actionType.id)
         const _customers = await mCustomer.findAll({ where: { id: { [Op.in]: customers.map(c => c.id) } } })
 
@@ -103,6 +103,7 @@ class ActionsSevice {
                 } catch (e) { }
             }
             actions.push({
+                ...rest,
                 amount: amount,
                 percent: c.percent,
                 res: _actionType.action_type === 'REMOVE' ? -amount : _actionType.action_type === 'REMOVE_PERCENT' ? -(amount * (c.percent * 0.01)) : _actionType.action_type === 'ADD' ? amount : _actionType.action_type === 'ADD_PERCENT' ? (amount * (c.percent * 0.01)) : 0,

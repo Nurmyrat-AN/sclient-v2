@@ -38,7 +38,7 @@ export const ActionTypesPage = () => {
             renderList={({ data: { count, rows }, error, filter, loading, refresh, setFilter }) => <Table size='small' stickyHeader>
                 <TableHead>
                     <TableRow>
-                        <TableCell>
+                        <TableCell width={160}>
                             <Autocomplete
                                 size='small'
                                 fullWidth
@@ -56,14 +56,16 @@ export const ActionTypesPage = () => {
                                 })}
                                 options={[true, false]}
                                 getOptionLabel={option => option ? 'Global' : 'Local'}
-                                renderInput={props => <TextField {...props} InputProps={{
-                                    ...props.InputProps,
-                                    startAdornment: <InputAdornment position='start'>
-                                        <IconButton onClick={() => setFilter(filter => ({ ...filter, offset: 0, hideDeleted: !filter.hideDeleted }))}>
-                                            <DeleteOutline color={filter.hideDeleted ? 'inherit' : 'error'} fontSize='small' />
-                                        </IconButton>
-                                    </InputAdornment>
-                                }} />}
+                                renderInput={props => <TextField {...props}
+                                    inputRef={(el: any) => el && el.style.setProperty('min-width', '0', "important")}
+                                    InputProps={{
+                                        ...props.InputProps,
+                                        startAdornment: <InputAdornment position='start'>
+                                            <IconButton onClick={() => setFilter(filter => ({ ...filter, offset: 0, hideDeleted: !filter.hideDeleted }))}>
+                                                <DeleteOutline color={filter.hideDeleted ? 'inherit' : 'error'} fontSize='small' />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }} />}
                             />
                         </TableCell>
                         <TableCell>
@@ -98,8 +100,8 @@ export const ActionTypesPage = () => {
                     {error && <TableRow><TableCell align="center" colSpan={6}><Button onClick={refresh} size='small'>{error}</Button></TableCell></TableRow>}
                     {!error && !loading && count === 0 && <TableRow><TableCell align="center" colSpan={6}>Tapylmady!</TableCell></TableRow>}
                     {rows.map(data => <TableRow key={data.id}>
-                        <TableCell>
-                            <IconButton style={{ backgroundColor: data.actionColor }}>
+                        <TableCell width={160} align='center'>
+                            <IconButton component='div' style={{ backgroundColor: data.actionColor }}>
                                 <IconButton component='div' size='small' style={{ padding: 1, backgroundColor: 'white' }}>
                                     {data.isGlobal ? <CheckOutlined fontSize='small' color="success" /> : <VisibilityOffOutlined fontSize='small' />}
                                 </IconButton>
