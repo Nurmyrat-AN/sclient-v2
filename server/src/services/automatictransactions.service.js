@@ -18,7 +18,11 @@ class AutomaticTransactionsService {
         }]
     })
 
-    create = ({ id, ...props }) => mActionTypeTransactions.create({ ...props, actionTypeId: this.actionTypeId }, { include: ['attachedGroups'] })
+    create = async ({ id, ...props }) => {
+        const aType = await mActionTypeTransactions.create({ ...props, actionTypeId: this.actionTypeId })
+        const attachedGroups = await mCustomerGroup.findAll({ where: { id: { [Op.in]: (props.attachedGroups || []).map(a => a.id) } } })
+        aType.addAttachedGroups(attachedGroups)
+    }
 
     update = async ({ id, ...props }) => {
         const trigger = await mActionTypeTransactions.findByPk(id)
