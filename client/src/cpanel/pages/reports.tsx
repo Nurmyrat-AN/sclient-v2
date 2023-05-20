@@ -69,7 +69,7 @@ const ReportItem = ({ data, filter }: { data: DATA_TYPE, filter: FILTER_TYPE }) 
     const navigate = useNavigate()
     return (
         <Tooltip open={openTooltip} onClose={() => setOpenToolTip(false)} followCursor TransitionComponent={Zoom} TransitionProps={{ timeout: 600 }} title={<List
-            style={{ padding: 0, minWidth: 450 }}>
+            style={{ padding: 0, minWidth: 650 }}>
             {data.grouppedActions.map(gAction => <ListItem key={gAction.owner}>
                 <ListItemIcon>
                     <Avatar>{gAction.count || 0}</Avatar>
