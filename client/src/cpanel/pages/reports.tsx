@@ -1,4 +1,4 @@
-import { Avatar, Button, CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip, Zoom } from "@mui/material"
+import { Avatar, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Table, TableBody, TableCell, TableHead, TableRow, TextField, Tooltip, Zoom } from "@mui/material"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 import { ACTION_TYPE_MODEL } from "../../types"
@@ -68,18 +68,31 @@ const ReportItem = ({ data, filter }: { data: DATA_TYPE, filter: FILTER_TYPE }) 
     const [openTooltip, setOpenToolTip] = React.useState(false)
     const navigate = useNavigate()
     return (
-        <Tooltip open={openTooltip} onClose={() => setOpenToolTip(false)} followCursor TransitionComponent={Zoom} TransitionProps={{ timeout: 600 }} title={<List
-            style={{ padding: 0, minWidth: 650 }}>
-            {data.grouppedActions.map(gAction => <ListItem key={gAction.owner}>
-                <ListItemIcon>
-                    <Avatar>{gAction.count || 0}</Avatar>
-                </ListItemIcon>
-                <ListItemText primary={gAction.owner} secondary={`${gAction.sumAmount || 0} TMT`} />
-                <ListItemSecondaryAction>
-                    {`${gAction.sumBalance || 0} TMT`}
-                </ListItemSecondaryAction>
-            </ListItem>)}
-        </List>}>
+        <>
+            <Dialog open={openTooltip} onClose={() => setOpenToolTip(false)}>
+                <DialogTitle>
+                    {data.name}
+                </DialogTitle>
+                <DialogContent style={{ minWidth: 600 }}>
+                    <List
+                        style={{ padding: 0 }}>
+                        {data.grouppedActions.map(gAction => <ListItem key={gAction.owner}>
+                            <ListItemIcon>
+                                <Avatar>{gAction.count || 0}</Avatar>
+                            </ListItemIcon>
+                            <ListItemText primary={gAction.owner} secondary={`${gAction.sumAmount || '0.00'} TMT`} />
+                            <ListItemSecondaryAction>
+                                {`${gAction.sumBalance || '0.00'} TMT`}
+                            </ListItemSecondaryAction>
+                        </ListItem>)}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button style={{ whiteSpace: 'nowrap', marginLeft: 10 }}>{`${data.count || '0.00'} sany`}</Button>
+                    <Button style={{ whiteSpace: 'nowrap', marginLeft: 10 }}>{`${data.sumAmount || '0.00'} TMT`}</Button>
+                    <Button style={{ whiteSpace: 'nowrap', marginLeft: 10 }}>{`${data.sumBalance || '0.00'} TMT`}</Button>
+                </DialogActions>
+            </Dialog>
             <TableRow onClick={() => setOpenToolTip(!openTooltip)}>
                 <TableCell width={10}><IconButton onClick={() => navigate(`/cpanel/actions?actionTypeId=${data.id}&startdate=${filter.startdate}&enddate=${filter.enddate}`)}><SearchOutlined fontSize="small" /></IconButton></TableCell>
                 <TableCell width={'100%'}>{data.name}</TableCell>
@@ -87,6 +100,6 @@ const ReportItem = ({ data, filter }: { data: DATA_TYPE, filter: FILTER_TYPE }) 
                 <TableCell width={10} align="right" style={{ whiteSpace: 'nowrap' }}>{`${data.sumAmount || '0.00'} TMT`}</TableCell>
                 <TableCell width={10} align="right" style={{ whiteSpace: 'nowrap' }}>{`${data.sumBalance || '0.00'} TMT`}</TableCell>
             </TableRow>
-        </Tooltip>
+        </>
     )
 }

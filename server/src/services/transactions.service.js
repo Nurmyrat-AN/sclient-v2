@@ -71,7 +71,7 @@ class AishTransactionsService {
                     if (!_customer) continue;
 
                     // Check second customer
-                    if (_aTransaction.secondCustomer && _aTransaction !== (_aTransaction.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1)) continue;
+                    if (_aTransaction.secondCustomer && _aTransaction.secondCustomer !== (_aTransaction.mainCustomer === 2 ? _tr.customer_1 : _tr.customer_2)) continue;
 
                     // Check attachment
                     if (!_aTransaction.attachToAllCustomers) {
