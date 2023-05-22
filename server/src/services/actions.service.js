@@ -180,6 +180,13 @@ class ActionsSevice {
             rows.push({
                 ...row.toJSON(),
                 grouppedActions: await mAction.findAll({
+                    where: {
+                        [Op.and]: [
+                            { createdAt: { [Op.gte]: moment(startdate).format('YYYY-MM-DD 00:00:00') } },
+                            { createdAt: { [Op.lte]: moment(enddate).format('YYYY-MM-DD 23:23:59') } },
+                            { actionTypeId: row.id }
+                        ]
+                    },
                     attributes: {
                         exclude: [
                             "id",
