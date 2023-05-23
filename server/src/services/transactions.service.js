@@ -95,7 +95,7 @@ class AishTransactionsService {
 
                     const _dbTransactions = (await mTransaction.findOrCreate({ where: { _id: _tr._id } }))[0]
                     const parentInvoice = ([...transaction.lst_invoices, ...transaction.lst_cashtransactions].find(t => t._id === (_tr?.parent_invoice || '')) || {})
-                    await _dbTransactions.update([...Object.keys(parentInvoice), Object.keys(_tr)].reduce((res, k) => ({ ...res, [k]: _tr[k] || parentInvoice[k] }), {}))
+                    await _dbTransactions.update([...Object.keys(parentInvoice), ...Object.keys(_tr)].reduce((res, k) => ({ ...res, [k]: _tr[k] || parentInvoice[k] }), {}))
 
                     const isCreated = await mAction.findOne({ where: { customerId: _customer.id, transactionId: _dbTransactions.id, actionTypeId: _aTransaction.actionTypeId }, paranoid: false })
                     if (_tr.markedasinvalid_date && isCreated) {
@@ -119,7 +119,15 @@ class AishTransactionsService {
                     }
 
                     // Ready creation!
-                    const result = await new ActionsSevice().createActions({ createdAt: _tr.lastediton, actionType, customers: [_customer], note: _dbTransactions.note, owner: `${ownerUser} (AUTOMATIC)`, transactionId: _dbTransactions.id, amount: _tr.total_sum })
+                    const result = await new ActionsSevice().createActions({
+                        createdAt: _tr.lastediton,
+                        actionType,
+                        customers: [_customer],
+                        note: _dbTransactions.note,
+                        owner: `${ownerUser} (AUTOMATIC)`,
+                        transactionId: _dbTransactions.id,
+                        amount: _tr.total_sum
+                    })
                     console.log('Created automatic action!', result.map(r => r.toJSON()))
                 }
             }
