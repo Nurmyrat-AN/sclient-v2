@@ -118,6 +118,20 @@ class AishTransactionsService {
                         } catch (e) { }
                     }
 
+                    let amount = _tr.total_sum
+
+                    try {
+                        if (actionType.amountType === 'sum_received') {
+                            amount = _tr.sum_received > _tr.total_sum ? _tr.total_sum : _tr.sum_received
+                        } else if (actionType.amountType === 'difference') {
+                            amount = _tr.total_sum - (_tr.sum_received > _tr.total_sum ? _tr.total_sum : _tr.sum_received)
+                        } else {
+                            amount = _tr.total_sum
+                        }
+                    } catch (e) {
+                        console.log('AMOUNT_TYPE', e)
+                    }
+
                     // Ready creation!
                     const result = await new ActionsSevice().createActions({
                         createdAt: _tr.lastediton,
@@ -126,7 +140,7 @@ class AishTransactionsService {
                         note: _dbTransactions.note,
                         owner: `${ownerUser} (AUTOMATIC)`,
                         transactionId: _dbTransactions.id,
-                        amount: _tr.total_sum
+                        amount
                     })
                     console.log('Created automatic action!', result.map(r => r.toJSON()))
                 }

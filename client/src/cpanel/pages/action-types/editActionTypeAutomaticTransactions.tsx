@@ -146,7 +146,7 @@ const EditTriggerDialog = (props: {
                             options={['total_sum', 'sum_received', 'difference'] as EDIT_ACTION_TYPE_TRANSACTION_TYPE['amountType'][]}
                             fullWidth
                             size='small'
-                            renderInput={props => <TextField {...props} label='Töleg görnüşi' />}
+                            renderInput={props => <TextField {...props} label='Möçber görnüşi' />}
                             value={state.amountType || 'total_sum'}
                             onChange={(e, value) => setState(state => ({ ...state, amountType: value || 'total_sum' }))}
                         />
