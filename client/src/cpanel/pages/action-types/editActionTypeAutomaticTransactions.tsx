@@ -142,6 +142,16 @@ const EditTriggerDialog = (props: {
                         />
                     </ListItem>}
                     <ListItem>
+                        <Autocomplete
+                            options={['total_sum', 'sum_received', 'difference'] as EDIT_ACTION_TYPE_TRANSACTION_TYPE['amountType'][]}
+                            fullWidth
+                            size='small'
+                            renderInput={props => <TextField {...props} label='Töleg görnüşi' />}
+                            value={state.amountType || 'total_sum'}
+                            onChange={(e, value) => setState(state => ({ ...state, amountType: value || 'total_sum' }))}
+                        />
+                    </ListItem>
+                    <ListItem>
                         <FormControlLabel style={{ flexGrow: 1 }} label='Ene fakturasy bolmaly (Mysal üçin Giriş/Töleg [Faktura tölegi we Özbaşdak hereket)' control={<Switch checked={state.hasParentInvoice} onChange={() => setState(state => ({ ...state, hasParentInvoice: !state.hasParentInvoice }))} />} />
                     </ListItem>
                     <ListItem>
