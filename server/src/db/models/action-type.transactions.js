@@ -7,6 +7,7 @@ const mActionTypeTransactions = sequelize.define('action-type-transaction', {
     mainCustomer: { type: DataTypes.INTEGER, defaultValue: null, allowNull: true },
     secondCustomer: { type: DataTypes.STRING, defaultValue: null, allowNull: true },
     paymentTypes: DataTypes.JSON,
+    amountType: { type: DataTypes.ENUM('sum_received', 'total_sum', 'difference'), defaultValue: 'total_sum' },
     attachToAllCustomers: { type: DataTypes.BOOLEAN, defaultValue: false },
 })
 

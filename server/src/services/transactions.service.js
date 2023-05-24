@@ -71,7 +71,7 @@ class AishTransactionsService {
                     if (!_customer) continue;
 
                     // Check second customer
-                    if (_aTransaction.secondCustomer && _aTransaction !== (_aTransaction.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1)) continue;
+                    if (_aTransaction.secondCustomer && _aTransaction.secondCustomer !== (_aTransaction.mainCustomer === 2 ? _tr.customer_1 : _tr.customer_2)) continue;
 
                     // Check attachment
                     if (!_aTransaction.attachToAllCustomers) {
@@ -95,7 +95,7 @@ class AishTransactionsService {
 
                     const _dbTransactions = (await mTransaction.findOrCreate({ where: { _id: _tr._id } }))[0]
                     const parentInvoice = ([...transaction.lst_invoices, ...transaction.lst_cashtransactions].find(t => t._id === (_tr?.parent_invoice || '')) || {})
-                    await _dbTransactions.update([...Object.keys(parentInvoice), Object.keys(_tr)].reduce((res, k) => ({ ...res, [k]: _tr[k] || parentInvoice[k] }), {}))
+                    await _dbTransactions.update([...Object.keys(parentInvoice), ...Object.keys(_tr)].reduce((res, k) => ({ ...res, [k]: _tr[k] || parentInvoice[k] }), {}))
 
                     const isCreated = await mAction.findOne({ where: { customerId: _customer.id, transactionId: _dbTransactions.id, actionTypeId: _aTransaction.actionTypeId }, paranoid: false })
                     if (_tr.markedasinvalid_date && isCreated) {
@@ -118,8 +118,30 @@ class AishTransactionsService {
                         } catch (e) { }
                     }
 
+                    let amount = _tr.total_sum
+
+                    try {
+                        if (actionType.amountType === 'sum_received') {
+                            amount = _tr.sum_received > _tr.total_sum ? _tr.total_sum : _tr.sum_received
+                        } else if (actionType.amountType === 'difference') {
+                            amount = _tr.total_sum - (_tr.sum_received > _tr.total_sum ? _tr.total_sum : _tr.sum_received)
+                        } else {
+                            amount = _tr.total_sum
+                        }
+                    } catch (e) {
+                        console.log('AMOUNT_TYPE', e)
+                    }
+
                     // Ready creation!
-                    const result = await new ActionsSevice().createActions({ createdAt: _tr.lastediton, actionType, customers: [_customer], note: _dbTransactions.note, owner: `${ownerUser} (AUTOMATIC)`, transactionId: _dbTransactions.id, amount: _tr.total_sum })
+                    const result = await new ActionsSevice().createActions({
+                        createdAt: _tr.lastediton,
+                        actionType,
+                        customers: [_customer],
+                        note: _dbTransactions.note,
+                        owner: `${ownerUser} (AUTOMATIC)`,
+                        transactionId: _dbTransactions.id,
+                        amount
+                    })
                     console.log('Created automatic action!', result.map(r => r.toJSON()))
                 }
             }

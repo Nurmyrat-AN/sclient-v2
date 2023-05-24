@@ -35,6 +35,7 @@ export type EDIT_ACTION_TYPE_TRANSACTION_TYPE = {
     mainCustomer?: number | null
     secondCustomer?: string | null
     customer?: CUSTOMER_MODEL | null
+    amountType?: 'sum_received' | 'total_sum' | 'difference'
     attachedGroups: CUSTOMER_GROUP_MODEL[]
 }
 

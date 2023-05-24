@@ -1,8 +1,8 @@
 const __cookieConfig = {
-    httpOnly: false,
-    secure: true,
+    httpOnly: true,
+    secure: false,
     maxAge: 60 * 1000 * 60 * 24 * 365,
-    sameSite: 'None',
+    // sameSite: 'None',
 }
 
 module.exports = __cookieConfig

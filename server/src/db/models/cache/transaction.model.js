@@ -23,6 +23,6 @@ const mTransaction = sequelize.define('_transaction', {
     total_sum_before_discount: DataTypes.DOUBLE,
     total_sum: DataTypes.DOUBLE,
 
-})
+}, { indexes: [{ name: '_id', fields: ['_id'], unique: true }] })
 
 module.exports = mTransaction

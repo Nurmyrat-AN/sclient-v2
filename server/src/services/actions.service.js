@@ -1,4 +1,4 @@
-const { Sequelize, Op } = require("sequelize")
+const { Sequelize, Op, HasMany } = require("sequelize")
 const mAction = require("../db/models/action.model")
 const mActionType = require("../db/models/action-type.model")
 const mCustomer = require("../db/models/customer.model")
@@ -158,7 +158,7 @@ class ActionsSevice {
 
         const actionsSql = `FROM actions WHERE actions.deletedAt IS NULL AND actions.actionTypeId=\`action-type\`.id AND actions.createdAt>='${moment(startdate).format('YYYY-MM-DD 00:00:00')}' AND actions.createdAt<='${moment(enddate).format('YYYY-MM-DD 23:23:59')}'`
 
-        return await mActionType.findAndCountAll({
+        const result = await mActionType.findAndCountAll({
             where: {
                 name: { [Op.like]: `%${name}%` }
             },
@@ -171,6 +171,60 @@ class ActionsSevice {
             },
             order: ['tertip']
         })
+
+        const rows = []
+
+        while (result.rows.length) {
+            const row = result.rows.shift()
+            const actionsOwnerGrouppedSql = `FROM actions WHERE actions.deletedAt IS NULL AND owner=action.owner AND actions.actionTypeId=${row.id} AND actions.createdAt>='${moment(startdate).format('YYYY-MM-DD 00:00:00')}' AND actions.createdAt<='${moment(enddate).format('YYYY-MM-DD 23:23:59')}'`
+            rows.push({
+                ...row.toJSON(),
+                grouppedActions: await mAction.findAll({
+                    where: {
+                        [Op.and]: [
+                            { createdAt: { [Op.gte]: moment(startdate).format('YYYY-MM-DD 00:00:00') } },
+                            { createdAt: { [Op.lte]: moment(enddate).format('YYYY-MM-DD 23:23:59') } },
+                            { actionTypeId: row.id }
+                        ]
+                    },
+                    attributes: {
+                        exclude: [
+                            "id",
+                            "amount",
+                            "percent",
+                            "res",
+                            "actionTypeId",
+                            "customerId",
+                            "messageId",
+                            "action_type",
+                            "aish_balance",
+                            "transactionId",
+                            "hasMessage",
+                            "note",
+                            "deletedNote",
+                            "createdAt",
+                            "updatedAt",
+                            "deletedAt",
+                            "actionId",
+                            "count",
+                            "sumBalance",
+                            "sumAmount",
+                        ],
+                        include: [
+                            [Sequelize.literal(`(SELECT COUNT(id) ${actionsOwnerGrouppedSql})`), 'count'],
+                            [Sequelize.literal(`(SELECT SUM(res) ${actionsOwnerGrouppedSql})`), 'sumBalance'],
+                            [Sequelize.literal(`(SELECT SUM(amount) ${actionsOwnerGrouppedSql})`), 'sumAmount'],
+                        ]
+                    },
+                    group: 'owner'
+                })
+            })
+        }
+
+        return {
+            count: result.count,
+            rows
+        }
     }
 }
 
