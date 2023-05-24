@@ -62,7 +62,7 @@ const EditOrAddTriggerContainer = (props: {
     const [editData, setEditData] = React.useState<EDIT_ACTION_TYPE_TRANSACTION_TYPE | null>(null)
     return (
         <>
-            {props.renderData({ onEdit: data => setEditData(data || { attachedGroups: [], attachToAllCustomers: true, hasParentInvoice: false, paymentTypes: [], transactionType: null }) })}
+            {props.renderData({ onEdit: data => setEditData(data || { attachedGroups: [], attachToAllCustomers: true, hasParentInvoice: 'any', paymentTypes: [], transactionType: null }) })}
             {editData && <EditTriggerDialog
                 id={props.id}
                 label={props.label}
@@ -152,7 +152,15 @@ const EditTriggerDialog = (props: {
                         />
                     </ListItem>
                     <ListItem>
-                        <FormControlLabel style={{ flexGrow: 1 }} label='Ene fakturasy bolmaly (Mysal üçin Giriş/Töleg [Faktura tölegi we Özbaşdak hereket)' control={<Switch checked={state.hasParentInvoice} onChange={() => setState(state => ({ ...state, hasParentInvoice: !state.hasParentInvoice }))} />} />
+                        <Autocomplete
+                            options={['has', 'no', 'any'] as EDIT_ACTION_TYPE_TRANSACTION_TYPE['hasParentInvoice'][]}
+                            fullWidth
+                            size='small'
+                            renderInput={props => <TextField {...props} label='Ene fakturasy bolmaly (Mysal üçin Giriş/Töleg [Faktura tölegi we Özbaşdak hereket)' />}
+                            value={state.hasParentInvoice || 'any'}
+                            onChange={(e, value) => setState(state => ({ ...state, hasParentInvoice: value || 'any' }))}
+                        />
+                        {/* <FormControlLabel style={{ flexGrow: 1 }} label='Ene fakturasy bolmaly (Mysal üçin Giriş/Töleg [Faktura tölegi we Özbaşdak hereket)' control={<Switch checked={state.hasParentInvoice} onChange={() => setState(state => ({ ...state, hasParentInvoice: !state.hasParentInvoice }))} />} /> */}
                     </ListItem>
                     <ListItem>
                         <FormControl>

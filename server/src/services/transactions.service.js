@@ -64,7 +64,8 @@ class AishTransactionsService {
                     if (_tr.payment_type && !(_aTransaction.paymentTypes || []).includes(_tr.payment_type)) continue;
 
                     // Check parent invoices
-                    if ((_aTransaction.hasParentInvoice && (_tr.parent_invoice || '').length === 0) || (!_aTransaction.hasParentInvoice && (_tr.parent_invoice || '').length > 0)) continue;
+                    if (_aTransaction.hasParentInvoice === 'has' && (_tr.parent_invoice || '').length === 0) continue;
+                    if (_aTransaction.hasParentInvoice === 'no' && (_tr.parent_invoice || '').length > 0) continue;
 
                     // Check existing customer
                     const _customer = await mCustomer.findOne({ where: { _id: _aTransaction.mainCustomer === 2 ? _tr.customer_2 : _tr.customer_1 } })
