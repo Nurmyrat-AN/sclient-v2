@@ -122,9 +122,9 @@ class AishTransactionsService {
                     let amount = _tr.total_sum
 
                     try {
-                        if (actionType.amountType === 'sum_received') {
+                        if (_aTransaction.amountType === 'sum_received') {
                             amount = _tr.sum_received > _tr.total_sum ? _tr.total_sum : _tr.sum_received
-                        } else if (actionType.amountType === 'difference') {
+                        } else if (_aTransaction.amountType === 'difference') {
                             amount = _tr.total_sum - (_tr.sum_received > _tr.total_sum ? _tr.total_sum : _tr.sum_received)
                         } else {
                             amount = _tr.total_sum
