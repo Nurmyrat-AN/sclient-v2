@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config");
 
 const mActionTypeTransactions = sequelize.define('action-type-transaction', {
-    hasParentInvoice: { type: DataTypes.BOOLEAN, defaultValue: false },
+    hasParentInvoice: { type: DataTypes.ENUM('has', 'no', 'any'), defaultValue: 'any' },
     transactionType: { type: DataTypes.STRING, defaultValue: null, allowNull: true },
     mainCustomer: { type: DataTypes.INTEGER, defaultValue: null, allowNull: true },
     secondCustomer: { type: DataTypes.STRING, defaultValue: null, allowNull: true },

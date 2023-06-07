@@ -29,7 +29,7 @@ export type EDIT_ACTION_TYPE_MODEL = {
 export type EDIT_ACTION_TYPE_TRANSACTION_TYPE = {
     id?: number
     attachToAllCustomers: boolean
-    hasParentInvoice: boolean
+    hasParentInvoice?: 'has' | 'no' | 'any'
     transactionType: string | null
     paymentTypes: string[]
     mainCustomer?: number | null
