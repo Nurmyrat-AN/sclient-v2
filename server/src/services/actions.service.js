@@ -132,7 +132,7 @@ class ActionsSevice {
             logging: props.sendableMessages === true,
             attributes: {
                 include: [
-                    [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=action.id AND a1.customerId=action.customerId)`), 'balance']
+                    [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=\`action\`.id AND a1.customerId=\`action\`.customerId)`), 'balance']
                 ]
             },
             include: ['customer', {
