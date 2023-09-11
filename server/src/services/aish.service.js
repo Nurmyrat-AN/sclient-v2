@@ -2,6 +2,7 @@ const { default: axios } = require("axios")
 const SettingsService = require("./settings.service")
 const mCustomer = require("../db/models/customer.model")
 const mCurrency = require("../db/models/cache/currency.model")
+const sequelize = require("../db/config")
 const mCurrencyExchange = require("../db/models/cache/currency_exchange.model")
 const mBook = require("../db/models/cache/book.model")
 const mMeasure = require("../db/models/cache/measure.model")
@@ -38,6 +39,11 @@ class AishService {
     }
 
     saveRows = async (rows) => {
+try{
+        await sequelize.authenticate()
+}catch(e){
+        console.log(e)
+}
         let _sequence_number = 0
         const rowsCopy = [...rows]
         while (rowsCopy.length) {

@@ -1,8 +1,14 @@
 const mSettings = require("../db/models/settings.model")
+const sequelize = require("../db/config")
 const CustomError = require("../errors")
 
 const authMiddleware = async (req, res, next) => {
     try {
+try{
+	await sequelize.authenticate()
+}catch(e){
+	console.log(e)
+}
         req.owner = req.cookies['pc_name']
         const mainPassword = await mSettings.findOne({ where: { _name: 'main-app-key' } })
         req.hasAccessToApp = mainPassword?._value === req.cookies['main-app-key']

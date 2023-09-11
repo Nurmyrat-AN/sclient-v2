@@ -1,6 +1,7 @@
 const { default: axios } = require("axios")
 const SettingsService = require("./settings.service")
 const mSettings = require("../db/models/settings.model")
+const sequelize = require("../db/config")
 const mActionType = require("../db/models/action-type.model")
 const mCustomer = require("../db/models/customer.model")
 const mCustomerGroup = require("../db/models/customer-group.model")
@@ -39,7 +40,12 @@ class AishTransactionsService {
     }
 
     saveRows = async (rows) => {
-        const settingsService = new SettingsService()
+try{
+        await sequelize.authenticate()
+}catch(e){
+        console.log(e)
+}
+	const settingsService = new SettingsService()
         const host = await settingsService.get_host_url()
         let _transaction_sequence_number = 0
         const rowsCopy = [...rows]
