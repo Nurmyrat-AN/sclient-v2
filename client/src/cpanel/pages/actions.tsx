@@ -45,7 +45,7 @@ export const ActionsPage = (props: {
             }}
             initialFilter={{
                 customer: query.get('customer') || '',
-                isSent: query.get('isSent') || '',
+                isSent: query.get('isSent') || 'undefined',
                 owner: query.get('owner') || '',
                 note: query.get('note') || '',
                 amount: query.get('amount') || '',
