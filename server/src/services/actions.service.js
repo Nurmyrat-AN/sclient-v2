@@ -150,7 +150,7 @@ class ActionsSevice {
             paranoid: props.hideDeleted,
             limit: props.limit,
             offset: props.offset,
-            order: [['createdAt', 'DESC']]
+            order: [['id', 'DESC']]
         })
     }
 
