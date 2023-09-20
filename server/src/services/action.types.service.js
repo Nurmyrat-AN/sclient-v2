@@ -25,10 +25,11 @@ class ActionTypesService {
     update = async ({ id, ...props }) => {
         await mActionType.update({ ...props, deletedAt: null }, { where: { id }, paranoid: false })
         const aType = await mActionType.findByPk(id)
-        const groups = await aType.getAttachedGroups()
-        await aType.removeAttachedGroups(groups)
-        const groups2 = await mCustomerGroup.findAll({ where: { id: { [Op.in]: props.attachedGroups.map(a => a.id) } } })
-        await aType.addAttachedGroups(groups2)
+        console.log(aType)
+//	const groups = await aType.getAttachedGroups()
+//        await aType.removeAttachedGroups(groups)
+//        const groups2 = await mCustomerGroup.findAll({ where: { id: { [Op.in]: props.attachedGroups.map(a => a.id) } } })
+//        await aType.addAttachedGroups(groups2)
         return aType
     }
 

@@ -105,9 +105,11 @@ try{
                     await _dbTransactions.update([...Object.keys(parentInvoice), ...Object.keys(_tr)].reduce((res, k) => ({ ...res, [k]: _tr[k] || parentInvoice[k] }), {}))
 
                     const isCreated = await mAction.findOne({ where: { customerId: _customer.id, transactionId: _dbTransactions.id, actionTypeId: _aTransaction.actionTypeId }, paranoid: false })
-                    if (_tr.markedasinvalid_date && isCreated) {
-                        await isCreated.update({ deletedNote: _tr.markedasinvalid_note })
-                        await isCreated.destroy()
+                    if (_tr.markedasinvalid_date) {
+                        if(isCreated) {
+				await isCreated.update({ deletedNote: _tr.markedasinvalid_note })
+                        	await isCreated.destroy()
+			}
                         continue;
                     }
 
