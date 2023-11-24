@@ -76,7 +76,7 @@ export const ActionsPage = (props: {
                                 </IconButton>
                                 <div className='MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium css-1e6y48t-MuiButtonBase-root-MuiButton-root' onClick={() => setFilter(filter => ({
                                     ...filter,
-                                    isSent: filter.isSent === 'false' ? 'undefined' : filter.isSent === 'undefined' ? 'true' : 'false',
+                                    isSent: filter.isSent === 'false' ? 'undefined' : filter.isSent === 'undefined' ? 'undefined' : 'false',
                                     offset: 0
                                 }))} style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                                     <Typography variant='caption'>Habar</Typography>
