@@ -58,7 +58,6 @@ class AishService {
                     } catch (e) {
                         console.log(e)
                     }
-                    console.log(cachedobject.lstArbitraryProperties)
                     await customer[0].update({
                         _isactive: cachedobject._isactive === 'active',
                         _id: cachedobject._id,
