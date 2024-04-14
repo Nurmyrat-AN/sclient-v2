@@ -52,11 +52,18 @@ class AishService {
             switch (cachedobject?.OBJECT_TYPE) {
                 case 'customer':
                     const customer = await mCustomer.findOrCreate({ where: { _id: cachedobject._id } })
+                    let percent = 0
+                    try {
+                        percent = cachedobject.lstArbitraryProperties.find(m => m.Key.toLowerCase() === 'percent')?.Value || 0
+                    } catch (e) {
+                        console.log(e)
+                    }
                     await customer[0].update({
                         _isactive: cachedobject._isactive === 'active',
                         _id: cachedobject._id,
                         barcodes: cachedobject.barcodes,
                         name: cachedobject.name,
+                        percent,
                         phone_number: cachedobject.phone_number
                     })
                     break
