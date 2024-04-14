@@ -82,7 +82,11 @@ aish.post('/upload', async (req, res, next) => {
 
 aish.get('/products', async (req, res, next) => {
     try {
-        res.json(await aishService.getProducts())
+        const result = await aishService.getProducts()
+        if (req.query.giris !== 'true') {
+            result.products = result.products.map(p => ({ ...p, price_base_for_buying: 0 }))
+        }
+        res.json(result)
     } catch (e) {
         next(e)
     }

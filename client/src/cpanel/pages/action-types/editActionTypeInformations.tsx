@@ -77,7 +77,7 @@ export const Informations = (props: EDIT_ACTION_TYPE_PROPS) => {
     )
 }
 
-type MESSAGE_PATTERNS_TYPE = '{date}' | '{client}' | '{balance}' | '{amount}' | '{res}' | '{aish_balance}' | '{note}' | '{code}' | '{total_sum_before_discount}'
+type MESSAGE_PATTERNS_TYPE = '{date}' | '{client}' | '{balance}' | '{amount}' | '{res}' | '{aish_balance}' | '{note}' | '{code}' | '{total_sum_before_discount}' | '{owner}'
 const EditMessage = ({ message, setMessage }: { message: string, setMessage: (message: string) => void }) => {
     const [selectionIndex, setSelectionIndex] = React.useState(message.length)
 
@@ -112,6 +112,7 @@ const EditMessage = ({ message, setMessage }: { message: string, setMessage: (me
                 <Button onClick={() => handleAddPattern(`{aish_balance}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Aish Balance</Button>
                 <Button onClick={() => handleAddPattern(`{note}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Bellik</Button>
                 <Button onClick={() => handleAddPattern(`{code}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Faktura kody</Button>
+                <Button onClick={() => handleAddPattern(`{owner}`)} size='small' style={{ zoom: 0.9, margin: 2, lineHeight: 1, opacity: 0.5 }} color='inherit' variant='outlined'>Ýerine ýetiren</Button>
             </ListItem>
         </>
     )

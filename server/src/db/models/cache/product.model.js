@@ -12,6 +12,7 @@ const mProduct = sequelize.define('_product', {
     price_base_for_buying: DataTypes.DOUBLE,
     price_base_for_sale: DataTypes.DOUBLE,
     price_minimum_for_sale: DataTypes.DOUBLE,
+    stock: DataTypes.DOUBLE,
     property_1: DataTypes.STRING,
     property_2: DataTypes.STRING,
     property_3: DataTypes.STRING,

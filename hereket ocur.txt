@@ -1,0 +1,29 @@
+INSERT INTO `sclient-v2-bak2`.actions (SELECT 
+	null as id,
+ b_table.balance as amount, 
+ actions.percent, 
+ b_table.balance as res, 
+ actions.actionTypeId, 
+ b_table.customerId, 
+ actions.messageId, 
+ actions.action_type, 
+ actions.aish_balance, 
+ actions.transactionId, 
+ actions.hasMessage, 
+ actions.note, 
+ actions.deletedNote, 
+ actions.owner, 
+ actions.createdAt, 
+ actions.updatedAt, 
+ actions.deletedAt, 
+ actions.actionId
+
+
+
+ FROM
+(
+SELECT * FROM 
+	(SELECT custs.*, 
+     		(SELECT SUM(res) FROM actions WHERE actions.customerId=custs.customerId AND deletedAt IS NULL) as balance from (SELECT DISTINCT customerId FROM `actions`) as custs) 
+	            as balances WHERE balances.balance>0
+    ) as b_table LEFT JOIN actions ON actions.id=1)

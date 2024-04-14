@@ -9,6 +9,7 @@ const devices = require("./devices.route");
 const messageService = require("../../services/message.service");
 const zipService = require("../../services/zip.service");
 const ActionsSevice = require("../../services/actions.service");
+const ostatok = require("./ostatok.route");
 
 const api = Router()
 
@@ -19,6 +20,7 @@ api.use('/customer-groups', customerGroups)
 api.use('/customers', customers)
 api.use('/devices', devices)
 api.use('/settings', settings)
+api.use('/ostatok', ostatok)
 
 api.get('/getSendableMessages', async (req, res, next) => {
     try {

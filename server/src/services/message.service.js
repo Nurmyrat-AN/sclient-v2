@@ -39,6 +39,7 @@ const patterns = {
     res: '{res}',
     aish_balance: '{aish_balance}',
     note: '{note}',
+    owner: '{owner}',
     code: '{code}',
 }
 
@@ -52,6 +53,7 @@ const getMessage = (action) => {
     message = replacePattern(message, 'res', `${action.res}`)
     message = replacePattern(message, 'aish_balance', `${action.aish_balance || '0.00'}`)
     message = replacePattern(message, 'note', `${action.note || ''}`)
+    message = replacePattern(message, 'owner', `${action.owner || ''}`)
     message = replacePattern(message, 'code', `${action.transaction?.code || ''}`)
 
 

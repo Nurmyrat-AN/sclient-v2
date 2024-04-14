@@ -83,13 +83,14 @@ class ActionsSevice {
         if (!_actionType) throw CustomError.notFound()
         if (_customers.length === 0) throw CustomError.notFound()
 
-        if (_actionType.action_type !== 'NONE' && (!amount || amount <= 0)) throw CustomError.notFound()
+        if (_actionType.action_type !== 'NONE' && (!amount || amount <= 0)) throw CustomError.notFound() //|| _customers.find(c => !c._isactive)  AKTIWLERI YAPMAK
 
 
         if (_actionType.action_type === 'REMOVE' && _customers.find(c => c.balance < amount)) throw CustomError.badRequest({ status: 400, messageCode: 400, message: 'Not enough balance' })
 
         if (_actionType.action_type === 'REMOVE_PERCENT' && _customers.find(c => c.balance < amount * (c.percent * 0.01))) throw CustomError.notFound({ status: 400, messageCode: 400, message: 'Not enough balance' })
 
+		if(_actionType.action_type.includes('ADD') && _customers.find(c => !c._isactive)) throw CustomError.badRequest({ status: 400, messageCode: 400, message: 'Customer is not active' })
 
         const actions = []
         while (_customers.length) {

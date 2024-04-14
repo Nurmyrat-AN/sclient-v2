@@ -39,11 +39,11 @@ class AishService {
     }
 
     saveRows = async (rows) => {
-try{
-        await sequelize.authenticate()
-}catch(e){
-        console.log(e)
-}
+        try {
+            await sequelize.authenticate()
+        } catch (e) {
+            console.log(e)
+        }
         let _sequence_number = 0
         const rowsCopy = [...rows]
         while (rowsCopy.length) {
@@ -161,10 +161,10 @@ try{
                 },
                 include: [{
                     association: new BelongsTo(mProduct, mCurrency, { as: 'product_currency', foreignKey: 'currency', targetKey: '_id' }),
-                    attributes: [],
+                    // attributes: [],
                 }, {
                     association: new BelongsTo(mProduct, mMeasure, { as: 'product_measure', foreignKey: 'measure', targetKey: '_id' }),
-                    attributes: [],
+                    // attributes: [],
 
                 }],
             })
@@ -174,6 +174,8 @@ try{
                     const stocks = resultAish.filter(r => r.product_id === product._id)
                     return {
                         ...product.toJSON(),
+                        currency: product.product_currency,
+                        measure: product.product_measure,
                         stock: stocks.reduce((res, pResult) => res + pResult.stock_in_main_measure, 0),
                         stocks: stocks.map(pResult => ({
                             stock: pResult.stock_in_main_measure,
@@ -185,12 +187,13 @@ try{
                 count: products.length,
                 warehouses
             }
+            console.log('Ostatok')
             this._aishProducts = {
                 result,
                 lastUpdated: new Date()
             }
         } catch (e) { }
-        this._aishProductsTimer = setTimeout(this._syncAishProducts, 1000 * 60 * 5)
+        this._aishProductsTimer = setTimeout(this._syncAishProducts, 30000)
     }
 
     getProducts = async () => {

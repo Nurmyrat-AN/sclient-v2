@@ -18,9 +18,11 @@ class CustomersService {
                 { name: { [Op.like]: `%${name}%` } },
                 { phone_number: { [Op.like]: `%${name}%` } },
             ],
-        }, {
-            _isactive: true
-        }]
+        }, 
+		//{
+        //    _isactive: true
+        //}
+		]
 
         if (barcodes) {
             andArr.push(Sequelize.literal(`JSON_CONTAINS(\`customer\`.barcodes, '"${barcodes}"', '$')`))
@@ -53,18 +55,20 @@ class CustomersService {
             count: await mCustomer.count({
                 where: await this.getAndArr(props),
             }),
-            rows: await mCustomer.findAll({
+            rows: (await mCustomer.findAll({
                 where: await this.getAndArr(props),
                 attributes: {
+					
                     include: [
-                        [Sequelize.literal(`COALESCE((SELECT SUM(res) FROM actions WHERE actions.deletedAt IS NULL AND customerId=customer.id ${enddate ? `AND actions.createdAt<='${formatEndDate(new Date(enddate))}'` : ''}),0)`), 'balance']
+                        [Sequelize.literal(`COALESCE((SELECT SUM(res) FROM actions WHERE actions.deletedAt IS NULL AND customerId=customer.id ${enddate ? `AND actions.createdAt<='${formatEndDate(new Date(enddate))}'` : ''}),0)`), 'balance'],
+						[Sequelize.literal(`CONCAT(CASE WHEN _isactive=0 THEN '{*} ' ELSE '' END, name)`), 'fullName']
                     ]
                 },
                 include: ['groups'],
                 offset: offset,
                 limit: limit,
                 order: ['name']
-            })
+            })).map(c => ({...c.toJSON(), name: c.toJSON().fullName}))
         }
     }
 
@@ -76,6 +80,7 @@ class CustomersService {
     getSumOfBalances = async (props = {}) => {
         const ids = await this.getIDS({ ...props, enddate: undefined })
         const sum = await mAction.sum('res', {
+            logging:true,
             where: {
                 createdAt: { [Op.lte]: new Date(props.enddate || new Date()) },
                 customerId: { [Op.in]: ids },
