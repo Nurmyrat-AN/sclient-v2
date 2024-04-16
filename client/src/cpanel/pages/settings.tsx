@@ -2,13 +2,15 @@ import { Autocomplete, CircularProgress, IconButton, InputAdornment, List, ListI
 import { CheckOutlined, DeleteOutlined, EditOutlined } from "@mui/icons-material"
 
 import $ from 'jquery'
-import { ACTION_TYPE_MODEL } from "../../types"
+import { ACTION_TYPE_MODEL, CUSTOMER_MODEL } from "../../types"
 import { QueryListContainer } from "../../containers/querylist.container"
 import React from "react"
 import { _axios } from "../../config/request"
+import { AsyncAutoComplete } from "../../components/AsyncAutoComplete"
 
 type SETTINGS_TYPE = {
     'default-action-type-id'?: string
+    'compare-customer-id'?: string
     'device-app-key'?: string
     'main-app-key'?: string
     '_sequence_number'?: string
@@ -25,7 +27,7 @@ const _defaultSettings: SETTINGS_TYPE = {
 
 export const SettingsPage = () => {
     return (
-        <QueryListContainer<{}, {}, { settings: SETTINGS_TYPE, actionTypes: ACTION_TYPE_MODEL[] }>
+        <QueryListContainer<{}, {}, { settings: SETTINGS_TYPE, actionTypes: ACTION_TYPE_MODEL[], customers: CUSTOMER_MODEL[] }>
             initialFilter={{}}
             url="/settings"
             renderList={({ data: { extras = { settings: {}, actionTypes: [] } }, error, filter, loading, refresh, setFilter }) => <List>
@@ -80,6 +82,14 @@ export const SettingsPage = () => {
                             />}
                             extras={extras.settings || {}}
                             refresh={refresh} />
+                        <EditCustomer
+                            _key="compare-customer-id"
+                            label="Ilkibaşdaky hereket görnüşi"
+                            customers={extras.customers || []}
+                            getOptionsLabel={value => extras.actionTypes.find(aType => aType.id.toString() === value?.trim())?.name || '???'}
+                            extras={extras.settings || {}}
+                            refresh={refresh}
+                        />
                     </>}
             </List>}
         />
@@ -189,5 +199,67 @@ const StringTableCell = ({ _key, extras, label, refresh, type = 'string', custom
                 </IconButton>
             </ListItemSecondaryAction>}
         </ListItem>
+    )
+}
+
+
+
+let controllerCustomer = new AbortController()
+const EditCustomer = ({ _key, extras, label, refresh, type = 'string', defaultValue = '', getOptionsLabel = value => value, customers }: {
+    extras: SETTINGS_TYPE,
+    _key: keyof SETTINGS_TYPE,
+    getOptionsLabel?: (value: string) => any
+    label: string,
+    defaultValue?: string,
+    refresh: () => void,
+    type?: 'number' | 'string'
+    customers: CUSTOMER_MODEL[]
+}) => {
+    const getCustomers: (query?: string) => Promise<CUSTOMER_MODEL[]> = async query => {
+        controllerCustomer.abort()
+        controllerCustomer = new AbortController()
+        const { data: { rows } } = await _axios.post(`/customers`, { name: query, limit: 100 }, { signal: controllerCustomer.signal })
+        return rows
+    }
+    return (
+        <StringTableCell
+            _key="compare-customer-id"
+            label="Deňeşdirilmeli müşderi"
+            getOptionsLabel={value => customers.find(c => c._id === value)?.name || '???'}
+            customEditor={({ handleClose, handleOpen, handleSave, loading, value, setValue }) =>
+                <AsyncAutoComplete<CUSTOMER_MODEL>
+                    initialOptions={customers}
+                    label={`Müşderi saýla`}
+                    getOptionsAsync={getCustomers}
+                    getOptionsLabel={option => option.name}
+                    isOptionEqualToValue={(option, value) => option._id === value._id}
+                    value={customers.find(c => c._id === extras["compare-customer-id"]) || null}
+                    onChange={(e, value) => setValue(value?._id || '???')}
+                    textFieldProps={pr => ({
+                        ...pr,
+                        label: "Deňeşdirilmeli muşderi",
+                        autoFocus: true,
+                        fullWidth: true,
+                        onBlur: handleClose,
+                        onKeyUp: e => {
+                            if (e.keyCode === 27) {
+                                handleClose()
+                            }
+                            if (e.keyCode === 13) {
+                                handleSave()
+                            }
+                        },
+                        InputProps: {
+                            ...pr.InputProps,
+                            id: `editcompare-customer-id`,
+                            endAdornment: <InputAdornment position='end'>
+                                {loading ? <CircularProgress size={20} /> : <CheckOutlined fontSize="small" />}
+                                {pr.InputProps.endAdornment}
+                            </InputAdornment>
+                        },
+                    })}
+                />}
+            extras={extras}
+            refresh={refresh} />
     )
 }

@@ -1,4 +1,4 @@
-import { Autocomplete, TextField, TextFieldProps } from "@mui/material"
+import { Autocomplete, AutocompleteRenderInputParams, TextField, TextFieldProps } from "@mui/material"
 
 import React from "react"
 
@@ -8,7 +8,7 @@ export const AsyncAutoComplete = <T = any>({ getOptionsAsync, label, textFieldPr
     getOptionsAsync: (query?: string) => Promise<T[]>
     getOptionsLabel?: (option: T) => string
     isOptionEqualToValue?: (option: T, value: T) => boolean;
-    textFieldProps?: TextFieldProps
+    textFieldProps?: TextFieldProps | ((pr: AutocompleteRenderInputParams) => TextFieldProps)
     value?: any
     onChange?: (event: React.SyntheticEvent, value: T | null) => void
 }) => {
@@ -50,7 +50,10 @@ export const AsyncAutoComplete = <T = any>({ getOptionsAsync, label, textFieldPr
             onChange={props.onChange}
             onInputChange={(e, value) => setInputValue(value)}
             getOptionLabel={props.getOptionsLabel}
-            renderInput={pr => <TextField {...textFieldProps || {}} {...pr} label={label} />}
+            renderInput={pr => <TextField
+                {...(typeof textFieldProps === 'function' ? textFieldProps(pr) : { ...textFieldProps || {}, ...pr })}
+                label={label}
+            />}
         />
     )
 }

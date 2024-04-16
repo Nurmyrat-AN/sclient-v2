@@ -4,6 +4,7 @@ const mActionType = require("../../db/models/action-type.model");
 const aishTransactionsService = require("../../services/transactions.service");
 const aishService = require("../../services/aish.service");
 const CustomError = require("../../errors");
+const mCustomer = require("../../db/models/customer.model");
 
 const settings = new Router()
 
@@ -12,12 +13,14 @@ settings.post('/', async (req, res, next) => {
         if (!req.isAdmin) throw CustomError.accessDeniedequest()
 
         const settings = (await mSettings.findAll()).reduce((res, s) => ({ ...res, [s._name]: s._value }), {})
+        
         res.json({
             count: 0,
             rows: 0,
             extras: {
                 settings,
-                actionTypes: await mActionType.findAll({ where: { isGlobal: true } })
+                actionTypes: await mActionType.findAll({ where: { isGlobal: true } }),
+                customers: await mCustomer.findAll({ where: { _id: settings['compare-customer-id'] || '???' } })
             }
         })
     } catch (e) {

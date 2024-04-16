@@ -7,6 +7,7 @@ const numberQuerySql = require("../utils/numbersql.utils")
 const moment = require('moment')
 const socketService = require("./socket.service")
 const CustomersService = require("./customers.service")
+const mSettings = require("../db/models/settings.model")
 
 class ActionsSevice {
     getAndArr = props => {
@@ -90,7 +91,7 @@ class ActionsSevice {
 
         if (_actionType.action_type === 'REMOVE_PERCENT' && _customers.find(c => c.balance < amount * (c.percent * 0.01))) throw CustomError.notFound({ status: 400, messageCode: 400, message: 'Not enough balance' })
 
-		if(_actionType.action_type.includes('ADD') && _customers.find(c => !c._isactive)) throw CustomError.badRequest({ status: 400, messageCode: 400, message: 'Customer is not active' })
+        if (_actionType.action_type.includes('ADD') && _customers.find(c => !c._isactive)) throw CustomError.badRequest({ status: 400, messageCode: 400, message: 'Customer is not active' })
 
         const actions = []
         while (_customers.length) {
@@ -159,6 +160,15 @@ class ActionsSevice {
 
         const actionsSql = `FROM actions WHERE actions.deletedAt IS NULL AND actions.actionTypeId=\`action-type\`.id AND actions.createdAt>='${moment(startdate).format('YYYY-MM-DD 00:00:00')}' AND actions.createdAt<='${moment(enddate).format('YYYY-MM-DD 23:23:59')}'`
 
+        const customerId = (await mSettings.findOne({ where: { _name: 'compare-customer-id' } }))?._value
+
+        let balance = 0
+        try {
+            balance = await (customerId ? new CustomersService().getAishBalance(customerId) : 0)
+        } catch (e) { }
+
+
+
         const result = await mActionType.findAndCountAll({
             where: {
                 name: { [Op.like]: `%${name}%` }
@@ -225,7 +235,8 @@ class ActionsSevice {
 
         return {
             count: result.count,
-            rows
+            rows,
+            extras: { difference: ((await mAction.sum('res')) - balance).toFixed(2) }
         }
     }
 }

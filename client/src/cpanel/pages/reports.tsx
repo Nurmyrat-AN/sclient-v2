@@ -41,7 +41,7 @@ export const ReportsPage = () => {
                 enddate: query.get('enddate') || moment(new Date()).format('YYYY-MM-DD'),
             }}
             url="/actions/reports"
-            renderList={({ data: { count, rows }, error, filter, loading, refresh, setFilter }) => <Table size='small' stickyHeader>
+            renderList={({ data: { count, rows, extras }, error, filter, loading, refresh, setFilter }) => <Table size='small' stickyHeader>
                 <TableHead>
                     <TableCell width={'100%'} colSpan={2}><TextField size="small" fullWidth value={filter.name} label='Ady' onChange={e => setFilter(filter => ({ ...filter, name: e.target.value, offset: 0 }))} /></TableCell>
                     <DateCell colSpan={3} query={filter} onChange={({ date1, date2 }) => setFilter(filter => ({ ...filter, startdate: date1, enddate: date2, offset: 0 }))} />
@@ -50,6 +50,9 @@ export const ReportsPage = () => {
                     {loading && <TableRow><TableCell align="center" colSpan={5}><CircularProgress size={20} /></TableCell></TableRow>}
                     {error && <TableRow><TableCell align="center" colSpan={5}><Button onClick={refresh} size='small'>{error}</Button></TableCell></TableRow>}
                     {!error && !loading && count === 0 && <TableRow><TableCell align="center" colSpan={5}>Tapylmady!</TableCell></TableRow>}
+                    {rows.length > 0 ?
+                        <TableRow><TableCell align="right" colSpan={5}><h3 style={{ color: 'red' }}>{`${extras.difference || '0'} TMT`}</h3></TableCell></TableRow>
+                        : null}
                     {rows.map(data => <ReportItem key={data.id} data={data} filter={filter} />)}
                 </TableBody>
                 <CustomTablePagination
