@@ -217,7 +217,8 @@ class ActionsSevice {
                             [Sequelize.literal(`(SELECT SUM(amount) ${actionsOwnerGrouppedSql})`), 'sumAmount'],
                         ]
                     },
-                    group: 'owner'
+                    group: 'owner',
+                    order: ['owner']
                 })
             })
         }
