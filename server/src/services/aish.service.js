@@ -54,7 +54,7 @@ class AishService {
                     const customer = await mCustomer.findOrCreate({ where: { _id: cachedobject._id } })
                     let percent = 0
                     try {
-                        percent = cachedobject.lstArbitraryProperties.find(m => m.Key.toLowerCase() === 'percent')?.Value || 0
+                        percent = cachedobject.lstArbitraryProperties.find(m => m.Key.toLowerCase() === 'percent')?.Value || customer[0].percent || 0
                     } catch (e) {
                         console.log(e)
                     }
