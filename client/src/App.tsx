@@ -68,7 +68,9 @@ const HomePage = () => {
       {(customer.full || customer.barcodes) && <AddAction
         actionProps={{ customers: customer.full ? [customer.full.id] : [], barcodes: customer.barcodes }}
         onClose={() => setCustomer({})}
-        onSave={console.log}
+        onSave={() => {
+          
+        }}
       />}
     </div>
   )

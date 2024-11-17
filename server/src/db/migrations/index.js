@@ -86,7 +86,7 @@ const initializeDB = async () => {
 
     await sequelize.authenticate()
 
-    await sequelize.sync({ alter: true })
+    // await sequelize.sync({ alter: true })
 
 
     const password = await mSettings.findOne({ where: { _name: 'device-app-key' } })
