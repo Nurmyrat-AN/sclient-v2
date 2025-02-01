@@ -39,8 +39,8 @@ INSERT INTO actionsCopy (SELECT
         null as note, 
         null as deletedNote, 
         'awtomatic' as owner, 
-        '2024-05-31 22:00:00' as createdAt, 
-        '2024-05-31 22:00:00' as updatedAt, 
+        '2025-01-31 22:00:00' as createdAt, 
+        '2025-01-31 22:00:00' as updatedAt, 
         null as deletedAt, 
         null as actionId
         
