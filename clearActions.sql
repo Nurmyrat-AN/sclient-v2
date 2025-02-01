@@ -36,7 +36,7 @@ INSERT INTO actionsCopy (SELECT
         0 as aish_balance, 
         null as transactionId, 
         0 as hasMessage, 
-        null as note, 
+        "" as note, 
         null as deletedNote, 
         'awtomatic' as owner, 
         '2025-01-31 22:00:00' as createdAt, 
