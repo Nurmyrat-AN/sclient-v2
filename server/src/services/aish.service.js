@@ -97,7 +97,7 @@ class AishService {
                     break
                 case 'globalsettings':
                     const currencyMain = await mCurrency.findOrCreate({ where: { name: cachedobject.main_currency_name } })
-                    await mCurrency.update({ main: false }, { where: { main: true } })
+                    // await mCurrency.update({ main: false }, { where: { main: true } })
                     await currencyMain[0].update({
                         name: cachedobject.main_currency_name,
                         main: true
