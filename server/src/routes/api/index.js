@@ -10,6 +10,7 @@ const messageService = require("../../services/message.service");
 const zipService = require("../../services/zip.service");
 const ActionsSevice = require("../../services/actions.service");
 const ostatok = require("./ostatok.route");
+const products = require("./products.route");
 
 const api = Router()
 
@@ -18,6 +19,7 @@ api.use('/actions', actions)
 api.use('/aish', aish)
 api.use('/customer-groups', customerGroups)
 api.use('/customers', customers)
+api.use('/products', products)
 api.use('/devices', devices)
 api.use('/settings', settings)
 api.use('/ostatok', ostatok)

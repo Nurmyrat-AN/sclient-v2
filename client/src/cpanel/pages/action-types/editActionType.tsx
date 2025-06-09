@@ -8,10 +8,11 @@ import { Triggers } from "./editActionTypeTriggers";
 import { _axios } from "../../../config/request";
 import { getActionType_TYPE } from "../../../components/ActionType_TYPE_AutoComplete";
 import { useGlobalLoading } from "../../../context/globalloading";
+import { ExceptedProducts } from "./editActionTypeExceptedProducts";
 
 export const EditActionType = (props: EDIT_ACTION_TYPE_PROPS) => {
     const { state, refresh, onClose } = props
-    const [windowState, setWindowState] = React.useState<'INFORMATIONS' | 'TRANSACTIONS' | 'TRIGGERS'>('INFORMATIONS')
+    const [windowState, setWindowState] = React.useState<'INFORMATIONS' | 'TRANSACTIONS' | 'TRIGGERS' | 'PRODUCTS'>('INFORMATIONS')
     const { endLoading, startLoading } = useGlobalLoading()
 
     const handleSave = async () => {
@@ -49,11 +50,13 @@ export const EditActionType = (props: EDIT_ACTION_TYPE_PROPS) => {
                         <Button onClick={() => setWindowState('TRANSACTIONS')} size='small' color={windowState === 'TRANSACTIONS' ? 'primary' : 'inherit'}>Automatic transactions</Button>
                         <Button size='small' disabled style={{ margin: '0 5px', minWidth: 0 }}>/</Button>
                         <Button onClick={() => setWindowState('TRIGGERS')} size='small' color={windowState === 'TRIGGERS' ? 'primary' : 'inherit'}>Triggers</Button>
+                        <Button size='small' disabled style={{ margin: '0 5px', minWidth: 0 }}>/</Button>
+                        <Button onClick={() => setWindowState('PRODUCTS')} size='small' color={windowState === 'PRODUCTS' ? 'primary' : 'inherit'}>Excepted Products</Button>
                     </div>
                     <Divider />
                 </>}
                 <div style={{ display: 'flex', overflow: 'hidden', alignItems: 'stretch' }}>
-                    <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', marginLeft: windowState === 'INFORMATIONS' ? '0' : windowState === 'TRANSACTIONS' ? '-100%' : '-200%' }}>
+                    <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', marginLeft: windowState === 'INFORMATIONS' ? '0' : windowState === 'TRANSACTIONS' ? '-100%' : windowState === 'TRIGGERS' ?'-200%' : '-300%' }}>
                         <Informations {...props} />
                     </div>
                     <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', display: 'flex', flexDirection: 'column' }}>
@@ -61,6 +64,9 @@ export const EditActionType = (props: EDIT_ACTION_TYPE_PROPS) => {
                     </div>
                     <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', display: 'flex', flexDirection: 'column' }}>
                         <Triggers {...props} />
+                    </div>
+                    <div style={{ minWidth: '100%', maxWidth: '100%', transition: 'all ease-in 0.1s', display: 'flex', flexDirection: 'column' }}>
+                        <ExceptedProducts {...props} />
                     </div>
                 </div>
             </DialogContent>
