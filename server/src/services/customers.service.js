@@ -80,7 +80,7 @@ class CustomersService {
     getSumOfBalances = async (props = {}) => {
         const ids = await this.getIDS({ ...props, enddate: undefined })
         const sum = await mAction.sum('res', {
-            logging:true,
+            // logging:true,
             where: {
                 createdAt: { [Op.lte]: new Date(props.enddate || new Date()) },
                 customerId: { [Op.in]: ids },

@@ -3,6 +3,7 @@ const ActionTypesService = require("../../../services/action.types.service");
 const CustomError = require("../../../errors");
 const triggers = require("./triggers.route");
 const automatictransactions = require("./automatictransactions");
+const products = require("./products");
 
 const actionTypes = new Router()
 
@@ -42,5 +43,6 @@ actionTypes.use('/:actionTypeId([0-9]+)', (req, rex, next) => {
 
 actionTypes.use('/:actionTypeId([0-9]+)/triggers', triggers)
 actionTypes.use('/:actionTypeId([0-9]+)/automatictransactions', automatictransactions)
+actionTypes.use('/:actionTypeId([0-9]+)/products', products)
 
 module.exports = actionTypes

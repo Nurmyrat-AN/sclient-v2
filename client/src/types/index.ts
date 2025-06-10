@@ -11,6 +11,17 @@ export type CUSTOMER_MODEL = {
     groups: CUSTOMER_GROUP_MODEL[]
 }
 
+export type PRODUCT_MODEL = {
+    id: number
+    _id?: string
+    name: string
+    code: string
+    lstBarcodes: string[]
+    percent: number
+    balance: number
+    groups: CUSTOMER_GROUP_MODEL[]
+}
+
 export type EDIT_ACTION_TYPE_MODEL = {
     id?: number
     name: string

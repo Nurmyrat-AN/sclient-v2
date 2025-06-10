@@ -11,6 +11,7 @@ const mSettings = require("../models/settings.model");
 const mTransaction = require("../models/cache/transaction.model");
 const TriggersService = require("../../services/triggers.service");
 const mActionTypeTransactions = require("../models/action-type.transactions");
+const mProduct = require("../models/cache/product.model");
 
 
 
@@ -65,6 +66,7 @@ const initializeDB = async () => {
     mCustomerGroup.belongsToMany(mCustomer, { as: 'customers', through: 'zzz_customer_vs_groups' })
     mCustomer.belongsToMany(mCustomerGroup, { as: 'groups', through: 'zzz_customer_vs_groups' })
     mActionType.hasMany(mActionTypeTransactions, { as: 'transactions', foreignKey: 'actionTypeId' })
+    mActionType.belongsToMany(mProduct, { as: 'exceptedProducts', through: 'zzz_action_type_excepted_products' })
     mActionTypeTransactions.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_action_type_transactions_vs_customer_groups' })
 
     mTrigger.belongsToMany(mCustomerGroup, { as: 'attachedGroups', through: 'zzz_trigger_vs_customer_groups' })

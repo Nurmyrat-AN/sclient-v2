@@ -131,7 +131,7 @@ class ActionsSevice {
         const where = this.getAndArr(props)
         return mAction.findAndCountAll({
             where,
-            logging: props.sendableMessages === true,
+            // logging: props.sendableMessages === true,
             attributes: {
                 include: [
                     [Sequelize.literal(`(SELECT SUM(res) FROM actions a1 WHERE a1.deletedAt IS NULL AND a1.id<=\`action\`.id AND a1.customerId=\`action\`.customerId)`), 'balance']
