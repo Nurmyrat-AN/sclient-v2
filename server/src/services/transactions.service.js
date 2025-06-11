@@ -29,7 +29,7 @@ class AishTransactionsService {
         if (_transaction_sequence_number === undefined || bridge !== undefined) return;
         let _transaction_sequence_number_result = 0
         try {
-            const { data: rows } = await axios.get(`${host}/transactions?since=${_transaction_sequence_number}`)
+            const { data: rows } = await axios.get(`${host}/transactions?with_items=true&since=${_transaction_sequence_number}`)
             _transaction_sequence_number_result = await this.saveRows(rows)
             await settingsService.set_transaction_sequence_number(_transaction_sequence_number > _transaction_sequence_number_result ? _transaction_sequence_number : _transaction_sequence_number_result)
         } catch (e) {
@@ -40,12 +40,12 @@ class AishTransactionsService {
     }
 
     saveRows = async (rows) => {
-try{
-        await sequelize.authenticate()
-}catch(e){
-        console.log(e)
-}
-	const settingsService = new SettingsService()
+        try {
+            await sequelize.authenticate()
+        } catch (e) {
+            console.log(e)
+        }
+        const settingsService = new SettingsService()
         const host = await settingsService.get_host_url()
         let _transaction_sequence_number = 0
         const rowsCopy = [...rows]
@@ -106,10 +106,10 @@ try{
 
                     const isCreated = await mAction.findOne({ where: { customerId: _customer.id, transactionId: _dbTransactions.id, actionTypeId: _aTransaction.actionTypeId }, paranoid: false })
                     if (_tr.markedasinvalid_date) {
-                        if(isCreated) {
-				await isCreated.update({ deletedNote: _tr.markedasinvalid_note })
-                        	await isCreated.destroy()
-			}
+                        if (isCreated) {
+                            await isCreated.update({ deletedNote: _tr.markedasinvalid_note })
+                            await isCreated.destroy()
+                        }
                         continue;
                     }
 
@@ -143,6 +143,18 @@ try{
                         console.log('AMOUNT_TYPE', e)
                     }
 
+
+                    //excepted products
+                    let calculatedExceptedProductsAmount = amount
+                    try {
+
+                        const exceptedProducts = (await actionType.getExceptedProducts()).map(p => p._id)
+                        const lst_items = (parentInvoice?.lst_items || []).filter(p => exceptedProducts.includes(p.product))
+                        calculatedExceptedProductsAmount = amount - lst_items.reduce((res, v) => res + v.price_total, 0);
+                        if (calculatedExceptedProductsAmount === 0) continue
+                    } catch (e) {
+                        console.log(e)
+                    }
                     // Ready creation!
                     const result = await new ActionsSevice().createActions({
                         createdAt: _tr.lastediton,
@@ -151,7 +163,8 @@ try{
                         note: _dbTransactions.note,
                         owner: `${ownerUser} (AUTOMATIC)`,
                         transactionId: _dbTransactions.id,
-                        amount
+                        amount,
+                        calculatedExceptedProductsAmount
                     })
                     console.log('Created automatic action!', result.map(r => r.toJSON()))
                 }

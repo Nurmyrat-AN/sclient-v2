@@ -77,7 +77,7 @@ class ActionsSevice {
         return andArr
     }
 
-    createActions = async ({ actionType, amount, customers, transactionId = null, note, owner, actionId, ...rest }) => {
+    createActions = async ({ actionType, amount, customers, transactionId = null, note, owner, actionId, calculatedExceptedProductsAmount, ...rest }) => {
         const _actionType = await mActionType.findByPk(actionType.id)
         const _customers = await mCustomer.findAll({ where: { id: { [Op.in]: customers.map(c => c.id) } } })
 
@@ -104,11 +104,12 @@ class ActionsSevice {
                     aish_balance = await new CustomersService().getAishBalance(c._id)
                 } catch (e) { }
             }
+            const amountForCalculate = calculatedExceptedProductsAmount || amount
             actions.push({
                 ...rest,
                 amount: amount,
                 percent: c.percent,
-                res: _actionType.action_type === 'REMOVE' ? -amount : _actionType.action_type === 'REMOVE_PERCENT' ? -(amount * (c.percent * 0.01)) : _actionType.action_type === 'ADD' ? amount : _actionType.action_type === 'ADD_PERCENT' ? (amount * (c.percent * 0.01)) : 0,
+                res: _actionType.action_type === 'REMOVE' ? -amountForCalculate : _actionType.action_type === 'REMOVE_PERCENT' ? -(amountForCalculate * (c.percent * 0.01)) : _actionType.action_type === 'ADD' ? amountForCalculate : _actionType.action_type === 'ADD_PERCENT' ? (amountForCalculate * (c.percent * 0.01)) : 0,
                 actionTypeId: _actionType.id,
                 customerId: c.id,
                 messageId: null,
