@@ -6,12 +6,12 @@ const products = new Router()
 
 products.post('/', async (req, res, next) => {
     try {
-        const {query = '', limit = 10, offset = 0} = req.body
-        const where= {name: { [Op.like]: `%${query}%` } }
+        const {name = '', limit = 10, offset = 0} = req.body
+        const where= {name: { [Op.like]: `%${name}%` } }
 
         res.json({
             count: await mProduct.count({where}),
-            rows: await  mProduct.findAll({where, offset: offset, limit: limit, order: ['name']})
+            rows: await  mProduct.findAll({where, offset: offset, limit: limit, order: ['name'], logging: true})
         })
     } catch (e) {
          next(e)

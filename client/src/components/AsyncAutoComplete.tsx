@@ -23,8 +23,12 @@ export const AsyncAutoComplete = <T = any>({ getOptionsAsync, label, textFieldPr
                 try {
                     const result = await getOptionsAsync(inputValue)
                     setOptions(result)
-                } catch (e) { }
-                setLoading(false)
+                    setLoading(false)
+                } catch (e: any) {
+                    if (e.code !== 'ERR_CANCELED') {
+                        setLoading(false)
+                    }
+                }
             }, 200)
             return () => {
                 clearTimeout(timer)
