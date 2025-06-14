@@ -6,6 +6,7 @@ import $ from 'jquery'
 import React from "react"
 import { _axios } from "../config/request"
 import { confirmAlert } from "react-confirm-alert"
+import { useSearchParams } from "react-router-dom"
 
 export type ADD_ACTION_PROPS = {
     customers: number[]
@@ -26,12 +27,14 @@ type State = {
     note?: string
 }
 
-export const AddAction = ({ actionProps, onClose, onSave }: Props) => {
+export const AddAction = ({ actionProps, onClose: closeProps, onSave }: Props) => {
     const [loadingStatus, setLoadingStatus] = React.useState<{ loading: boolean, error?: boolean, errorText?: string }>({ error: false, loading: true })
     const [saveStatus, setSaveStatus] = React.useState<{ loading: boolean, error?: boolean, errorText?: string }>({ error: false, loading: false })
     const [refresh, setRefresh] = React.useState(false)
     const [confirmState, setConfirmState] = React.useState(false)
     const [state, setState] = React.useState<State | null>(null)
+
+    const [searchParams, setSearchParams] = useSearchParams()
 
     React.useEffect(() => {
         const controller = new AbortController()
@@ -45,11 +48,24 @@ export const AddAction = ({ actionProps, onClose, onSave }: Props) => {
                 setLoadingStatus({ loading: false, error: true, errorText: e.message })
             }
         }, 200)
+        if (!searchParams.has('addactionopened')) {
+            searchParams.set('addactionopened', "true")
+            setSearchParams(searchParams)
+        }
         return () => {
             clearTimeout(timer)
             controller.abort()
         }
     }, [actionProps, setLoadingStatus, refresh])
+    
+    const onClose = () => {
+
+        if (searchParams.has('addactionopened')) {
+            searchParams.delete('addactionopened')
+            setSearchParams(searchParams)
+        }
+        closeProps()
+    }
 
     const handleSubmit = (e: any) => {
         e.preventDefault()

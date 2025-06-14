@@ -29,6 +29,7 @@ type Filter = {
     isSent: string
     customerId?: number
     hideDeleted: boolean
+    refreshList?: boolean
 }
 export const ActionsPage = (props: {
     customerId?: number
@@ -37,6 +38,7 @@ export const ActionsPage = (props: {
 }) => {
     const [actionType, setActionType] = React.useState<ACTION_TYPE_MODEL | null>(null)
     const [query] = useSearchParams()
+    console.log(query.has('addactionopened'))
     return (
         <QueryListContainer<ACTION_MODEL, Filter>
             onNewData={data => {
@@ -59,10 +61,12 @@ export const ActionsPage = (props: {
                 offset: parseInt(query.get('offset') || '0'),
                 limit: parseInt(query.get('limit') || '10'),
                 customerId: props.customerId,
-                hideDeleted: true
+                hideDeleted: true,
+                refreshList: false
             }}
             dynamicFilter={{
-                customerId: props.customerId
+                customerId: props.customerId,
+                refreshList: query.has('addactionopened') === false
             }}
             notSaveToUrl={Boolean(props.customerId)}
             url="/actions"

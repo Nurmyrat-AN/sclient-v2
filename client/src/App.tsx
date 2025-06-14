@@ -69,7 +69,7 @@ const HomePage = () => {
         actionProps={{ customers: customer.full ? [customer.full.id] : [], barcodes: customer.barcodes }}
         onClose={() => setCustomer({})}
         onSave={() => {
-          
+          console.log('saved')
         }}
       />}
     </div>

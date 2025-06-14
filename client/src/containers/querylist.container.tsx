@@ -62,9 +62,12 @@ export class QueryListContainer<T, F extends { [x: string]: any }, E extends { [
     componentDidUpdate(prevProps: Props<T, F, E>, prevState: State<T, F, E>) {
         if (JSON.stringify(prevState.filter) !== JSON.stringify(this.state.filter)) {
             this.getData()
+            console.log("Changed State")
         } else if (JSON.stringify(prevProps.dynamicFilter || null) !== JSON.stringify(this.props.dynamicFilter || null)) {
             this.setState(state => ({ ...state, filter: { ...state.filter, ...this.props.dynamicFilter } }))
+            console.log("Changed dinamic")
         }
+        console.log("Changed Something: ", this.props.dynamicFilter)
     }
 
     timer: NodeJS.Timeout | null = null
