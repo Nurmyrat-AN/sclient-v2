@@ -36,7 +36,7 @@ async function start() {
     app.use(errorMiddleware)
 
     /* --------------SERVE CLIENT------------------- */
-    app.use(express.static(path.resolve(__dirname, '../client/dist')));
+    app.use(express.static(path.resolve(__dirname, '../client/dist'), {maxAge: '1y'}));
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
     });

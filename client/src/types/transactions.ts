@@ -71,5 +71,9 @@ export const transactionTypes: {
         {
             transactionType: "Outbound/Loan",
             paymentTypes: []
+        },
+        {
+            transactionType: 'Outbound product cheapened',
+            paymentTypes: []
         }
     ]
